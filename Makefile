@@ -1,0 +1,43 @@
+NAME		= minishell
+
+COMPILER	= cc
+CFLAGS		= -Wall -Wextra -Werror
+INCL		= inc/
+
+SRC_DIR		= src/
+O_DIR		= obj/
+
+INCL_LIBFT	= lib/libft/includes/
+LINK_LIBFT	= lib/libft/
+
+INCL_RL 	= /usr/local/opt/readline/include/
+LINK_RL		= /usr/local/opt/readline/lib
+
+LIBFT		= $(addprefix $(LINK_LIBFT), libft.a)
+LIBS		= -L$(LINK_LIBFT) -lft -L$(LINK_RL) -lreadline
+
+C_FILES		= main.c
+C_FILES_DIR	= $(addprefix $(SRC_DIR), $(C_FILES)) 
+O_FILES		= $(C_FILES:.c=.o)
+O_FILES_DIR	= $(addprefix $(O_DIR), $(O_FILES))
+
+all: $(NAME)
+
+clean:
+	make -C lib/libft/ clean
+	rm -rf $(O_DIR)
+
+fclean: clean
+	rm -f $(NAME) $(LIBFT)
+
+re: fclean all
+
+$(NAME): $(O_FILES_DIR)
+	make -C $(LINK_LIBFT)
+	$(COMPILER) $(CFLAGS) -I$(INCL) -I$(INCL_LIBFT) $(LIBS) $(O_FILES_DIR) -o $@
+
+$(O_DIR)%.o: $(SRC_DIR)%.c
+	mkdir -p obj/
+	$(COMPILER) $(CFLAGS) -I$(INCL) -I$(INCL_LIBFT) -c $< -o $@
+
+.PHONY: all clean fclean re
