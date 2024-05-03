@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/20 11:14:49 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:17:09 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,5 +109,10 @@ size_t		ft_arrlen(char **str_array);
 int			is_quote(char c);
 int			is_spacetab(char c);
 int			is_anglebracket(char c);
+
+const char	*get_value(char **env, char *key);
+const char	*get_key(char **env, char *key);
+char		*add_var(char **env, char *key, char *value);
+char		*remove_var(char **env, char *key);
 
 #endif

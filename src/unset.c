@@ -1,40 +1,14 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/03 09:38:44 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/03 13:36:53 by jhughes          ###   ########.fr       */
+/*   Created: 2024/05/03 12:45:18 by jhughes           #+#    #+#             */
+/*   Updated: 2024/05/03 12:45:22 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	env(int argc, char **argv, char **envp)
-{
-	const int	size = ft_strarrlen(envp);
-	int			index;
-
-	(void) argc;
-	(void) argv;
-	index = 0;
-	while (index < size)
-		ft_putendl_fd(envp[index++], STDOUT_FILENO);
-
-
-	pid = fork();
-
-	if (pid == 0)
-	{
-		// Child, so run pogram
-		execve();
-	}
-	if (pid > 0)
-	{
-		// pid is the process id of the child above
-		kill(pid, SIGINT);
-	}
-	return (0);
-}
