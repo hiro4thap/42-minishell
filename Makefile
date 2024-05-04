@@ -16,7 +16,7 @@ LINK_RL		= /usr/local/opt/readline/lib
 LIBFT		= $(addprefix $(LINK_LIBFT), libft.a)
 LIBS		= -L$(LINK_LIBFT) -lft -L$(LINK_RL) -lreadline
 
-C_FILES		= main.c
+C_FILES		= main.c validation.c
 C_FILES_DIR	= $(addprefix $(SRC_DIR), $(C_FILES)) 
 O_FILES		= $(C_FILES:.c=.o)
 O_FILES_DIR	= $(addprefix $(O_DIR), $(O_FILES))
