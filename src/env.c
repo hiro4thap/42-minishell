@@ -6,35 +6,21 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 09:38:44 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/03 13:36:53 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/06 11:16:17 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	env(int argc, char **argv, char **envp)
+/// @brief Builtin: Displays all environment variables in the terminal.
+/// @param env The minishell environment.
+/// @return Exit code: 0 on success.
+int	env(t_environment *env)
 {
-	const int	size = ft_strarrlen(envp);
-	int			index;
+	int	index;
 
-	(void) argc;
-	(void) argv;
 	index = 0;
-	while (index < size)
-		ft_putendl_fd(envp[index++], STDOUT_FILENO);
-
-
-	pid = fork();
-
-	if (pid == 0)
-	{
-		// Child, so run pogram
-		execve();
-	}
-	if (pid > 0)
-	{
-		// pid is the process id of the child above
-		kill(pid, SIGINT);
-	}
+	while (index < env->size)
+		ft_putendl_fd(env->envp[index++], STDOUT_FILENO);
 	return (0);
 }
