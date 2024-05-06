@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/20 11:17:09 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:24:47 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,9 +110,75 @@ int			is_quote(char c);
 int			is_spacetab(char c);
 int			is_anglebracket(char c);
 
-const char	*get_value(char **env, char *key);
-const char	*get_key(char **env, char *key);
-char		*add_var(char **env, char *key, char *value);
-char		*remove_var(char **env, char *key);
+# define EXIT_COMMAND_NOT_EXIST 127
+
+/// @brief The minishell environment
+typedef struct s_environment
+{
+	char	**envp;
+	int		size;
+	int		max_size;
+}	t_environment;
+
+typedef struct s_command
+{
+	int		in_redirection;		//0:none 1:< 2:<<
+	char	*in_file;
+	int		out_redirection;	//0:none 1:> 2:>>
+	char	*out_file;	
+	char	*heredoc_eof;
+	char	**command;
+}	t_command;
+
+typedef enum e_redirection
+{
+	NONE,
+	SINGLE_IN,
+	DOUBLE_IN,
+	SINGLE_OUT,
+	DOUBLE_OUT
+}	t_redirection;
+
+int			init_environment(t_environment **env, char **shell_env);
+const char	*get_key(t_environment *env, char *key);
+int			get_key_index(t_environment *env, char *key);
+int			add_var(t_environment *env, char *key, char *value);
+int			set_var(t_environment *env, char *key, char *value);
+int			remove_var(t_environment *env, char *key);
+const char	*get_value(t_environment *env, char *key);
+t_command	parse_command(char *cmd);
+void		validate_redirection(char *str);
+void		commands(char *input, char **envp);
+void		dup_out_fds(int pipefd_p[2], t_command command);
+void		dup_in_fds(int pipefd_c[2], t_command command, int index);
+
+int			env(t_environment *env);
+int			export(t_environment *env, char *key_value);
+
+void		errprint(char *msg, char *fail);
+char		*trim_quote(char *token);
+size_t		ft_arrlen(char **str_array);
+int			is_quote(char c);
+int			is_spacetab(char c);
+int			is_anglebracket(char c);
+
+/// @brief The minishell environment
+typedef struct s_environment
+{
+	char	**envp;
+	int		size;
+	int		max_size;
+}	t_environment;
+
+int			init_environment(t_environment **env, char **shell_env);
+const char	*get_key(t_environment *env, char *key);
+int			get_key_index(t_environment *env, char *key);
+int			add_var(t_environment *env, char *key, char *value);
+int			set_var(t_environment *env, char *key, char *value);
+int			remove_var(t_environment *env, char *key);
+const char	*get_value(t_environment *env, char *key);
+
+int			env(t_environment *env);
+int			export(t_environment *env, char *key_value);
 
 #endif
