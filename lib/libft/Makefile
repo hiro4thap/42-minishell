@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+         #
+#    By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/19 17:27:27 by jhughes           #+#    #+#              #
-#    Updated: 2024/04/30 18:48:15 by jhughes          ###   ########.fr        #
+#    Updated: 2024/05/06 10:56:03 by jhughes          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ C_LIST		= ft_lstnew.c ft_lstsize.c ft_lstlast.c \
 C_MEM		= ft_calloc.c ft_memset.c ft_bzero.c ft_memcpy.c ft_memccpy.c \
 				ft_memmove.c ft_memchr.c ft_memcmp.c
 C_STR		= ft_strlen.c ft_strarrlen.c ft_strlcpy.c ft_strlcat.c ft_strconcat.c \
-				ft_strchr.c ft_strrchr.c ft_strnstr.c ft_strncmp.c \
+				ft_strchr.c ft_strrchr.c ft_strnstr.c ft_strncmp.c ft_strfind.c \
 				ft_substr.c ft_strjoin.c ft_strtrim.c ft_split.c  \
 				ft_strmapi.c ft_striteri.c ft_strdup.c ft_strclear.c
 C_TYPE		= ft_atoi.c ft_itoa.c ft_toupper.c ft_tolower.c  \

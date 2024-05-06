@@ -6,21 +6,31 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:07 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/03 12:45:49 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/06 11:16:25 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	export(int argc, char **argv, char **envp)
+/// @brief Builtin: Adds/sets the value of a key/value pair in the form of
+/// ``key=value`` to the minishell environment
+/// @param env The minishell environment.
+/// @param key_value The key/value pair to add/set in the environment.
+/// @return Exit code:
+/// 0 on success. 1 if set_var failed.  2 if invalid key. 3 if malloc failed.
+int	export(t_environment *env, char *key_value)
 {
-	const int	size = ft_strarrlen(envp);
-	int			index;
+	char	*key;
+	int		index;
+	int		status;
 
-	(void) argc;
-	(void) argv;
-	index = 0;
-	while (index < size)
-		ft_putendl_fd(envp[index++], STDOUT_FILENO);
-	return (0);
+	index = ft_strfind(key_value, "=");
+	if (index == -1)
+		return (1);
+	key = ft_substr(key_value, 0, index);
+	if (!key)
+		return (2);
+	status = set_var(env, key, ft_strchr(key_value, '=') + 1);
+	free(key);
+	return (status);
 }
