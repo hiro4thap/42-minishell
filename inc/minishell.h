@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/08 15:47:10 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/08 17:33:18 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ int			remove_var(t_environment *env, char *key);
 const char	*get_value(t_environment *env, char *key);
 t_command	split_cmd(char *cmd);
 void		validate_redirect(char *str);
+void		commands(char *input, char **envp);
 
 int			env(t_environment *env);
 int			export(t_environment *env, char *key_value);
