@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:37:06 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/06 11:19:31 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/08 12:30:31 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ int	add_var(t_environment *env, char *key, char *value)
 {
 	const int	size = ft_strarrlen(env->envp);
 	char		*var;
+	char		*temp_array;
 
 	var = ft_strconcat(key, "=", value, NULL);
 	if (!var)
@@ -91,7 +92,13 @@ int	add_var(t_environment *env, char *key, char *value)
 	}
 	if (env->size == env->max_size)
 	{
-		// Reallocate memory and copy.
+		temp_array = ft_strarr_resize(env->envp, env->size + 10);
+		if (!temp_array)
+		{
+			// Handle Error
+		}
+		env->envp = temp_array;
+		env->max_size += 10;
 	}
 	env->envp[env->size] = env->envp[env->size - 1];
 	env->envp[size - 1] = var;
