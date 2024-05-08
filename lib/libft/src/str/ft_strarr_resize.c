@@ -1,28 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strclear.c                                      :+:      :+:    :+:   */
+/*   ft_strarr_resize.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 08:38:35 by jhughes           #+#    #+#             */
-/*   Updated: 2024/04/15 08:43:04 by jhughes          ###   ########.fr       */
+/*   Created: 2024/05/08 11:50:51 by jhughes           #+#    #+#             */
+/*   Updated: 2024/05/08 12:15:50 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-// Frees all elements of a NULL terminated string array
-void	ft_strclear(char **str_array)
+char	**ft_strarr_resize(char **arr, int size)
 {
-	int	index;
+	char	**new_array;
+	int		current_size;
+	int		index;
 
+	if (!arr)
+		return (NULL);
+	current_size = ft_strarrlen(arr);
+	new_array = malloc(sizeof(char *) * (size + 1));
+	if (!new_array)
+		return (NULL);
 	index = 0;
-	while (str_array[index])
+	while (index < current_size && index < size)
 	{
-		free(str_array[index]);
-		str_array[index] = NULL;
+		new_array[index] = arr[index];
 		index++;
 	}
-	free(str_array);
+	new_array[index] = NULL;
+	ft_strarr_clear(arr);
+	return (new_array);
 }

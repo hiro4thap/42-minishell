@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 16:17:23 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/06 11:15:46 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/08 12:18:36 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ void	*ft_calloc(size_t nmemb, size_t size);
 // String Functions
 
 size_t	ft_strlen(const char *s);
-size_t	ft_strarrlen(char **str_array);
 size_t	ft_strlcpy(char *dst, const char *src, size_t sz);
 size_t	ft_strlcat(char *dst, const char *src, size_t sz);
 char	*ft_strconcat(char *str, ...);
@@ -79,7 +78,10 @@ char	*ft_strtrim(char const *s1, char const *set);
 char	**ft_split(char const *s, char c);
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 char	*ft_striteri(char *s, void (*f)(unsigned int, char *));
-void	ft_strclear(char **str_array);
+
+void	ft_strarr_clear(char **str_array);
+size_t	ft_strarr_len(char **str_array);
+char	**ft_strarr_resize(char **arr, int size);
 
 // Type Functions
 

@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 15:21:01 by jhughes           #+#    #+#             */
-/*   Updated: 2024/04/15 08:46:45 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/08 12:21:19 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ char	**ft_split(const char *s, char c)
 		output[word] = next_word(s, &index, c);
 		if (output[word] == NULL)
 		{
-			ft_strclear((char **) output);
+			ft_strarr_clear((char **) output);
 			return (NULL);
 		}
 		word++;
