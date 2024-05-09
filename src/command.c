@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 16:11:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/08 15:51:06 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/09 13:45:13 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ char	*get_current_token(char *ptr)
 	char	*ptr_start;
 	char	*token;
 
+	while (is_spacetab(*ptr))
+		ptr++;
 	ptr_start = ptr;
 	if (is_quote(*ptr))
 		ptr = ft_strchr(ptr + 1, *ptr) + 1;
@@ -37,6 +39,8 @@ char	*get_current_token(char *ptr)
 /// @return pointer which points to the first character of next token
 char	*point_next_token(char *ptr)
 {
+	while (is_spacetab(*ptr))
+		ptr++;
 	if (is_quote(*ptr))
 		ptr = ft_strchr(ptr + 1, *ptr) + 1;
 	else if (is_anglebracket(*ptr))
@@ -59,6 +63,8 @@ int	count_command(char *simple_command)
 	int	i;
 
 	i = 0;
+	while (is_spacetab(*simple_command))
+		simple_command++;
 	while (simple_command)
 	{
 		if (is_quote(*simple_command))

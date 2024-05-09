@@ -6,7 +6,7 @@
 /*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/08 19:00:55 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/09 17:31:17 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,20 @@
 int	main(int argc, char **argv, char **envp)
 {
 	char	*input;
+	char	*trimmed_input;
 
 	(void) argc;
 	(void) argv;
 	(void) envp;
 	while (1)
 	{
-		input = readline("> ");
+		input = readline("\e[1;34m> \e[0m");
+		trimmed_input = ft_strtrim(input, " \t");
+		if (!*trimmed_input)
+			continue ;
 		validate_redirect(input);
-		//t_command	cmd = split_cmd(input);
-		//(void)cmd;
 		commands(input, envp);
-		//ft_printf("%s\n", input);	//printing input for test. TODO:to be deleted
+		free(trimmed_input);
 	}
 	return (0);
 }

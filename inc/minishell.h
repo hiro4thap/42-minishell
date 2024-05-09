@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/08 17:33:18 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/09 16:57:02 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ struct termios
 }
 */
 # include "../lib/libft/includes/libft.h"
+
+# define EXIT_COMMAND_NOT_EXIST 127
 
 /// @brief The minishell environment
 typedef struct s_environment

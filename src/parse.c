@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/08 19:31:13 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/09 17:35:49 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,17 @@ char	**get_envp_path(char **envp) //TODO:remove after implementing get_env_var
 	return (envp_path);
 }
 
-void	dup_in_fds(int pipefd_c[2], t_command command)
+void	dup_in_fds(int pipefd_c[2], t_command command, int index)
 {
-	int	in_fd;
+	int		in_fd;
+	int		pid;
+	char	*line;
+	char	*input;
+	int		limlen;
 
-	if (pipefd_c)
+	if (0 < index)
 	{
+		close(pipefd_c[1]);
 		dup2(pipefd_c[0], STDIN_FILENO);
 		return ;
 	}
@@ -63,7 +68,30 @@ void	dup_in_fds(int pipefd_c[2], t_command command)
 		close(in_fd);
 	}
 	else if (command.in_redirection == DOUBLE_IN)
-		return ; //TODO:implement heredoc
+	{
+		pid = fork();
+		if (pid < -1)
+			exit(EXIT_FAILURE);
+		if (pid == 0)
+		{
+			input = NULL;
+			while (1)
+			{
+				line = readline("here_doc> ");
+				limlen = ft_strlen(command.heredoc_eof);
+				if (!ft_strncmp(line, command.heredoc_eof, limlen + 1))
+					break ;
+				if (!input)
+					input = ft_strjoin(line, "\n");
+				else
+					input = ft_strconcat(input, line, "\n", NULL);
+			}
+			write(pipefd_c[1], input, ft_strlen(input));
+		}
+		else if (0 < pid)
+			dup2(pipefd_c[0], STDIN_FILENO);
+		close(pipefd_c[1]);
+	}
 }
 
 void	dup_out_fds(int pipefd_p[2], t_command command)
@@ -108,9 +136,9 @@ void	execute_simple_command(t_command command, char **envp)
 		i++;
 	}
 	ft_printf("command not found: %s\n", command.command[0]);
-	ft_strclear(command.command);
 	ft_strclear(dirs); //TODO:needs to check if get_value allocates memory
-	exit(127);
+	ft_strclear(command.command);
+	exit(EXIT_COMMAND_NOT_EXIST);
 }
 
 /// @brief depending on the 
@@ -132,7 +160,7 @@ void	execute_commands(char **commands, int pipefd_p[2], int index, char **envp)
 	if (0 < pid)
 	{
 		command = split_cmd(commands[index]);
-		dup_in_fds(pipefd_c, command);
+		dup_in_fds(pipefd_c, command, index);
 		dup_out_fds(pipefd_p, command);
 		execute_simple_command(command, envp);
 	}
@@ -140,17 +168,6 @@ void	execute_commands(char **commands, int pipefd_p[2], int index, char **envp)
 		execute_commands(commands, pipefd_c, --index, envp);
 	else if (pid == 0 && index == 0)
 		exit(EXIT_SUCCESS);
-}
-
-void	execute_command(char *commands, int pipefd_c[2], char **envp)
-{
-	t_command	command;
-
-	(void) pipefd_c;
-	command = split_cmd(commands);
-	dup_in_fds(NULL, command);
-	dup_out_fds(pipefd_c, command);
-	execute_simple_command(command, envp);
 }
 
 size_t	ft_arrlen(char **str_array)
@@ -180,42 +197,20 @@ void	commands(char *input, char **envp)
 
 	commands = ft_split(input, '|');
 	arrlen = ft_arrlen(commands);
-	if (arrlen == 1)
+	if (pipe(pipefd_c) == -1)
+		exit(EXIT_FAILURE);
+	pid = fork();
+	if (pid == -1)
+		exit(EXIT_FAILURE);
+	if (pid == 0)
+		execute_commands(commands, pipefd_c, arrlen - 1, envp);
+	else if (0 < pid)
 	{
-		if (pipe(pipefd_c) == -1)
-			exit(EXIT_FAILURE);
-		pid = fork();
-		if (pid == -1)
-			exit(EXIT_FAILURE);
-		if (pid == 0)
-			execute_command(commands[0], pipefd_c, envp);
-		else if (0 < pid)
-		{
-			close(pipefd_c[1]);
-			read(pipefd_c[0], buffer, 1000);  //TODO:find a better way to connect pipecd_c[0] to STDOUT
-			ft_printf("%s", buffer);
-			free(buffer);
-			close(pipefd_c[0]);
-		}
-	}	
-	else if (1 < arrlen)
-	{
-		if (pipe(pipefd_c) == -1)
-			exit(EXIT_FAILURE);
-		pid = fork();
-		if (pid == -1)
-			exit(EXIT_FAILURE);
-		if (pid == 0)
-			execute_commands(commands, pipefd_c, arrlen - 1, envp);
-		else if (0 < pid)
-		{
-			close(pipefd_c[1]);
-			read(pipefd_c[0], buffer, 1000);  //TODO:find a better way to connect pipecd_c[0] to STDOUT
-			ft_printf("%s", buffer);
-			free(buffer);
-			close(pipefd_c[0]);
-		}
+		close(pipefd_c[1]);
+		read(pipefd_c[0], buffer, 1000);  //TODO:find a better way to connect pipecd_c[0] to STDOUT
+		ft_printf("%s", buffer);
+		free(buffer);
+		close(pipefd_c[0]);
 	}
 	ft_strclear(commands);
 }
-
