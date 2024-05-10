@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/09 16:57:02 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/10 15:04:53 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,11 +95,15 @@ const char	*get_value(t_environment *env, char *key);
 t_command	split_cmd(char *cmd);
 void		validate_redirect(char *str);
 void		commands(char *input, char **envp);
+void		dup_out_fds(int pipefd_p[2], t_command command);
+void		dup_in_fds(int pipefd_c[2], t_command command, int index);
 
 int			env(t_environment *env);
 int			export(t_environment *env, char *key_value);
 
+void		errprint(char *msg, char *fail);
 char		*trim_quote(char *token);
+size_t		ft_arrlen(char **str_array);
 int			is_quote(char c);
 int			is_spacetab(char c);
 int			is_anglebracket(char c);

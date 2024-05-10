@@ -6,19 +6,14 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/09 17:35:49 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/10 15:05:05 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-// 1) split input by '|' into commands (delimeters can be || or && in bonus)
-// 2) if < exists, set fd as input
-// 3) if << exists, read till limiter
-// 4) if > exists, set fd as output (overwrite)
-// 5) if >> exists, set fd as output (append)
-
-char	**get_envp_path(char **envp) //TODO:remove after implementing get_env_var
+/// @brief TODO:remove after implementing get_env_var
+char	**get_envp_path(char **envp)
 {
 	char	*envp_path_str;
 	char	**envp_path;
@@ -33,93 +28,10 @@ char	**get_envp_path(char **envp) //TODO:remove after implementing get_env_var
 	return (envp_path);
 }
 
-void	dup_in_fds(int pipefd_c[2], t_command command, int index)
-{
-	int		in_fd;
-	int		pid;
-	char	*line;
-	char	*input;
-	int		limlen;
-
-	if (0 < index)
-	{
-		close(pipefd_c[1]);
-		dup2(pipefd_c[0], STDIN_FILENO);
-		return ;
-	}
-	if (command.in_redirection == NONE)
-		return ;
-	else if (command.in_redirection == SINGLE_IN)
-	{
-		if (access(command.in_file, F_OK))
-		{
-			ft_printf("no such file or directory: %s\n", command.in_file);
-			exit(EXIT_FAILURE);
-		}
-		else if (access(command.in_file, R_OK))
-		{
-			ft_printf("permission denied: %s\n", command.in_file);
-			exit(EXIT_FAILURE);
-		}
-		in_fd = open(command.in_file, O_RDONLY);
-		if (in_fd < 0)
-			exit(EXIT_FAILURE);
-		dup2(in_fd, STDIN_FILENO);
-		close(in_fd);
-	}
-	else if (command.in_redirection == DOUBLE_IN)
-	{
-		pid = fork();
-		if (pid < -1)
-			exit(EXIT_FAILURE);
-		if (pid == 0)
-		{
-			input = NULL;
-			while (1)
-			{
-				line = readline("here_doc> ");
-				limlen = ft_strlen(command.heredoc_eof);
-				if (!ft_strncmp(line, command.heredoc_eof, limlen + 1))
-					break ;
-				if (!input)
-					input = ft_strjoin(line, "\n");
-				else
-					input = ft_strconcat(input, line, "\n", NULL);
-			}
-			write(pipefd_c[1], input, ft_strlen(input));
-		}
-		else if (0 < pid)
-			dup2(pipefd_c[0], STDIN_FILENO);
-		close(pipefd_c[1]);
-	}
-}
-
-void	dup_out_fds(int pipefd_p[2], t_command command)
-{
-	int		out_fd;
-
-	close(pipefd_p[0]);
-	if (command.out_redirection == NONE)
-	{
-		dup2(pipefd_p[1], STDOUT_FILENO);
-		return ;
-	}
-	if (!access(command.out_file, F_OK) && access(command.out_file, W_OK))
-	{
-		ft_printf("permission denied: %s\n", command.out_file);
-		exit(EXIT_FAILURE);
-	}
-	out_fd = STDOUT_FILENO;
-	if (command.out_redirection == SINGLE_OUT)
-		out_fd = open(command.out_file, O_CREAT | O_RDWR | O_TRUNC, 0644);
-	else if (command.out_redirection == DOUBLE_OUT)
-		out_fd = open(command.out_file, O_CREAT | O_WRONLY | O_APPEND, 0644);
-	if (out_fd < 0)
-		exit(EXIT_FAILURE);
-	dup2(out_fd, STDOUT_FILENO);
-	close(out_fd);
-}
-
+/// @brief searching executable file in PATH directories before execution.
+/// If file is not found, a message will be displayed
+/// @param command t_command structure to be execute
+/// @param envp TODO:should be replaced by get_value functions
 void	execute_simple_command(t_command command, char **envp)
 {
 	char	**dirs;
@@ -135,18 +47,21 @@ void	execute_simple_command(t_command command, char **envp)
 		free(cmd);
 		i++;
 	}
-	ft_printf("command not found: %s\n", command.command[0]);
+	errprint("command not found: %s\n", command.command[0]);
 	ft_strclear(dirs); //TODO:needs to check if get_value allocates memory
 	ft_strclear(command.command);
 	exit(EXIT_COMMAND_NOT_EXIST);
 }
 
-/// @brief depending on the 
-/// @param commands whole array of command 
-/// @param pipefd_p pipe passed from parent process
-/// @param index index for the command to execute
+/// @brief parent process handles file descripter and exectue simple command
+/// child process recursively execute itself unless it's the first command
+/// @param commands whole array of simple commands
+/// @param pipefd_p pipe passed from parent process.
+/// The function will pass the result of executing command to the pipe
+/// @param index index for the simple command to execute
 /// @param envp TODO:should be replaced by get_value functions
-void	execute_commands(char **commands, int pipefd_p[2], int index, char **envp)
+void	execute_commands(
+		char **commands, int pipefd_p[2], int index, char **envp)
 {
 	int			pipefd_c[2];
 	int			pid;
@@ -165,52 +80,29 @@ void	execute_commands(char **commands, int pipefd_p[2], int index, char **envp)
 		execute_simple_command(command, envp);
 	}
 	else if (pid == 0 && 0 < index)
-		execute_commands(commands, pipefd_c, --index, envp);
+		execute_commands(commands, pipefd_c, index - 1, envp);
 	else if (pid == 0 && index == 0)
 		exit(EXIT_SUCCESS);
-}
-
-size_t	ft_arrlen(char **str_array)
-{
-	size_t	len;
-
-	len = 0;
-	while (*str_array)
-	{
-		len += 1;
-		str_array++;
-	}
-	return (len);
 }
 
 /// @brief split the whole command into chanks by pipelines before execution
 /// @param input the string input through prompt
 /// @param envp TODO:should be replaced by get_value functions
-/// @return void
+/// @return
 void	commands(char *input, char **envp)
 {
 	char	**commands;
 	int		arrlen;
-	int		pipefd_c[2];
 	int		pid;
-	char	*buffer = malloc(1000);
 
 	commands = ft_split(input, '|');
 	arrlen = ft_arrlen(commands);
-	if (pipe(pipefd_c) == -1)
-		exit(EXIT_FAILURE);
 	pid = fork();
 	if (pid == -1)
 		exit(EXIT_FAILURE);
 	if (pid == 0)
-		execute_commands(commands, pipefd_c, arrlen - 1, envp);
-	else if (0 < pid)
-	{
-		close(pipefd_c[1]);
-		read(pipefd_c[0], buffer, 1000);  //TODO:find a better way to connect pipecd_c[0] to STDOUT
-		ft_printf("%s", buffer);
-		free(buffer);
-		close(pipefd_c[0]);
-	}
+		execute_commands(commands, NULL, arrlen - 1, envp);
+	if (0 < pid)
+		waitpid(pid, 0, 0);
 	ft_strclear(commands);
 }
