@@ -3,15 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/10 15:00:25 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/10 17:22:27 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
+/// @brief child process takes input from terminal until it hits the EOF string
+/// and passes it to the pipe so that command can take it as input
+/// @param pipefd_c the pipe to pass the input of heredoc
+/// @param command t_command structure which includs the EOF string
 void	heredoc_in(int pipefd_c[2], t_command command)
 {
 	int		pid;

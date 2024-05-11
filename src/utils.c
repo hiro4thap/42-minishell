@@ -3,15 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:37:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/10 15:04:38 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/10 15:28:43 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
+/// @brief trim a pair of quotes from token.
+/// @param token token which can be surrounded by quotes
+/// @return [MALLOC] trimmed token.
 char	*trim_quote(char *token)
 {
 	int		len;
@@ -32,27 +35,30 @@ char	*trim_quote(char *token)
 	return (res);
 }
 
-void	errprint(char *msg, char *fail)
+/// @brief display message with a file name or command
+/// @param format message including "%s" specifier which is replaced by "fail"
+/// @param fail name of file or command you want to display
+void	errprint(char *format, char *fail)
 {
-	while (*msg)
+	while (*format)
 	{
-		while (*msg && *msg != '%')
+		while (*format && *format != '%')
 		{
-			ft_putchar_fd(*msg, 2);
-			msg++;
+			ft_putchar_fd(*format, 2);
+			format++;
 		}
-		if (*msg && !ft_strncmp(msg, "%s", 2))
+		if (*format && !ft_strncmp(format, "%s", 2))
 		{
 			ft_putstr_fd(fail, 2);
-			msg++;
-			msg++;
+			format++;
+			format++;
 		}
 	}
 }
 
-/// @brief 
-/// @param str_array 
-/// @return 
+/// @brief count the lenght of a string array (NULL is not included)
+/// @param str_array the array you want to know the length of
+/// @return the length of a string array
 size_t	ft_arrlen(char **str_array)
 {
 	size_t	len;

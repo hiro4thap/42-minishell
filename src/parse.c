@@ -1,108 +1,145 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse.c                                            :+:      :+:    :+:   */
+/*   command.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/10 15:05:05 by hiono            ###   ########.fr       */
+/*   Created: 2024/05/06 16:11:50 by hiono             #+#    #+#             */
+/*   Updated: 2024/05/11 15:29:19 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-/// @brief TODO:remove after implementing get_env_var
-char	**get_envp_path(char **envp)
+/// @brief duplicate the token which is pointed by the param 'ptr'
+/// @param ptr current pointer
+/// @return [MALLOC] a token which can be surrounded by quotes
+char	*get_current_token(char *ptr)
 {
-	char	*envp_path_str;
-	char	**envp_path;
+	char	*ptr_start;
+	char	*token;
 
-	while (*envp)
-	{
-		if (!ft_strncmp(*envp, "PATH=", 5))
-			envp_path_str = *envp + 5;
-		envp++;
-	}
-	envp_path = ft_split(envp_path_str, ':');
-	return (envp_path);
+	while (is_spacetab(*ptr))
+		ptr++;
+	ptr_start = ptr;
+	if (is_quote(*ptr))
+		ptr = ft_strchr(ptr + 1, *ptr) + 1;
+	else if (is_anglebracket(*ptr))
+		ptr = ft_strrchr(ptr, *ptr) + 1;
+	else
+		while (*ptr && !is_anglebracket(*ptr) && !is_spacetab(*ptr))
+			ptr++;
+	token = ft_substr(ptr_start, 0, ptr - ptr_start);
+	return (token);
 }
 
-/// @brief searching executable file in PATH directories before execution.
-/// If file is not found, a message will be displayed
-/// @param command t_command structure to be execute
-/// @param envp TODO:should be replaced by get_value functions
-void	execute_simple_command(t_command command, char **envp)
+/// @brief search the next token within a simple command
+/// @param ptr current pointer
+/// @return pointer which points to the first character of next token
+char	*point_next_token(char *ptr)
 {
-	char	**dirs;
-	int		i;
-	char	*cmd;
+	while (is_spacetab(*ptr))
+		ptr++;
+	if (is_quote(*ptr))
+		ptr = ft_strchr(ptr + 1, *ptr) + 1;
+	else if (is_anglebracket(*ptr))
+		ptr = ft_strrchr(ptr, *ptr) + 1;
+	else
+		while (*ptr && !is_anglebracket(*ptr) && !is_spacetab(*ptr))
+			ptr++;
+	while (is_spacetab(*ptr))
+		ptr++;
+	if (!*ptr)
+		return (NULL);
+	return (ptr);
+}
 
-	dirs = get_envp_path(envp); //TODO:get_value from env vars
+/// @brief count the numebr of command strings
+/// @param simple_command a command split by pipeline
+/// @return the number of command strings (command + arguments + options)
+int	count_command(char *simple_command)
+{
+	int	i;
+
 	i = 0;
-	while (dirs[i])
+	while (is_spacetab(*simple_command))
+		simple_command++;
+	while (simple_command)
 	{
-		cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
-		execve(cmd, command.command, envp);
-		free(cmd);
+		if (is_quote(*simple_command))
+		{
+			simple_command = point_next_token(point_next_token(simple_command));
+			continue ;
+		}
 		i++;
+		simple_command = point_next_token(simple_command);
 	}
-	errprint("command not found: %s\n", command.command[0]);
-	ft_strclear(dirs); //TODO:needs to check if get_value allocates memory
-	ft_strclear(command.command);
-	exit(EXIT_COMMAND_NOT_EXIST);
+	return (i);
 }
 
-/// @brief parent process handles file descripter and exectue simple command
-/// child process recursively execute itself unless it's the first command
-/// @param commands whole array of simple commands
-/// @param pipefd_p pipe passed from parent process.
-/// The function will pass the result of executing command to the pipe
-/// @param index index for the simple command to execute
-/// @param envp TODO:should be replaced by get_value functions
-void	execute_commands(
-		char **commands, int pipefd_p[2], int index, char **envp)
+/// @brief parse redirection containded in a simple command and store it
+/// @param token token, which should be single or double angle bracket(s)
+/// @param simple_command a command split by pipeline
+/// @param command t_struct instance to store data on redirection
+/// @return command which is updated on redirection
+t_command	handle_redirections(
+		char *token, char *simple_command, t_command command)
 {
-	int			pipefd_c[2];
-	int			pid;
+	char	*redirection_argument;
+
+	redirection_argument = get_current_token(point_next_token(simple_command));
+	if (!ft_strncmp(token, "<", 2))
+	{
+		command.in_redirection = SINGLE_IN;
+		command.in_file = redirection_argument;
+	}
+	else if (!ft_strncmp(token, "<<", 3))
+	{
+		command.in_redirection = DOUBLE_IN;
+		command.heredoc_eof = redirection_argument;
+	}
+	else if (!ft_strncmp(token, ">", 2))
+	{
+		command.out_redirection = SINGLE_OUT;
+		command.out_file = redirection_argument;
+	}
+	else if (!ft_strncmp(token, ">>", 3))
+	{
+		command.out_redirection = DOUBLE_OUT;
+		command.out_file = redirection_argument;
+	}
+	return (command);
+}
+
+/// @brief parse a simple command by splitting it into tokens
+/// @param simple_command a command split by pipeline
+/// @return [MALLOC] t_command instance with parameters filled
+t_command	parse_command(char *simple_command)
+{
+	int			i;
+	int			len;
+	char		*token;
 	t_command	command;
 
-	if (pipe(pipefd_c) == -1)
-		exit(EXIT_FAILURE);
-	pid = fork();
-	if (pid == -1)
-		exit(EXIT_FAILURE);
-	if (0 < pid)
+	len = count_command(simple_command);
+	command.command = malloc((len + 1) * sizeof(char *));
+	i = 0;
+	command.in_redirection = NONE;
+	command.out_redirection = NONE;
+	while (simple_command)
 	{
-		command = split_cmd(commands[index]);
-		dup_in_fds(pipefd_c, command, index);
-		dup_out_fds(pipefd_p, command);
-		execute_simple_command(command, envp);
+		token = get_current_token(simple_command);
+		if (is_anglebracket(*token))
+		{
+			command = handle_redirections(token, simple_command, command);
+			simple_command = point_next_token(simple_command);
+			free(token);
+		}
+		else
+			command.command[i++] = trim_quote(token);
+		simple_command = point_next_token(simple_command);
 	}
-	else if (pid == 0 && 0 < index)
-		execute_commands(commands, pipefd_c, index - 1, envp);
-	else if (pid == 0 && index == 0)
-		exit(EXIT_SUCCESS);
-}
-
-/// @brief split the whole command into chanks by pipelines before execution
-/// @param input the string input through prompt
-/// @param envp TODO:should be replaced by get_value functions
-/// @return
-void	commands(char *input, char **envp)
-{
-	char	**commands;
-	int		arrlen;
-	int		pid;
-
-	commands = ft_split(input, '|');
-	arrlen = ft_arrlen(commands);
-	pid = fork();
-	if (pid == -1)
-		exit(EXIT_FAILURE);
-	if (pid == 0)
-		execute_commands(commands, NULL, arrlen - 1, envp);
-	if (0 < pid)
-		waitpid(pid, 0, 0);
-	ft_strclear(commands);
+	command.command[i] = NULL;
+	return (command);
 }
