@@ -6,11 +6,27 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:46:37 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 12:34:43 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/13 14:30:27 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	error(char *error_string, char *path)
+{
+	char *str;
+
+	if (!path)
+	{
+		perror(error_string);
+	}
+	else
+	{
+		str = ft_strjoin(error_string, path);
+		perror(str);
+		free(str);
+	}
+}
 
 /// @brief Changes the current working directory based on ``path``.
 /// @param env The minishell environment.
@@ -26,6 +42,10 @@ int	builtin_cd(t_environment *env, char *path)
 	
 	// cd with no args should try to access $HOME.
 	// ft_putendl_fd("minishell: cd: HOME not set");
+
+	// At least when home is set to an invalid path, it should include the path
+	// after cd: like "cd: hello: invalid path"
+	ft_printf("Path: %s\n", path);
 	if (path && !(*path))
 	{
 		const char *home = get_value(env, "HOME");
@@ -36,14 +56,14 @@ int	builtin_cd(t_environment *env, char *path)
 		}
 		if (chdir(home) != 0)
 		{
-			perror("minishell: cd");
+			error("minishell: cd: ", path);
 		}
 		return (0);
 	}
 	(void) env;
 	if (chdir(path) != 0)
 	{
-		perror("minishell: cd");
+		error("minishell: cd: ", path);
 	}
 	return (0);
 }
