@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 00:15:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/04/23 00:52:42 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/13 09:19:04 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
 // Returns index of first 'c' in 'str', or -1 not found/error occurs
-static int	ft_strfind(char *str, char c)
+static int	ft_strfind_c(char *str, char c)
 {
 	int	index;
 
@@ -53,7 +53,7 @@ static char	*buffer_new_data(char **buffer, int fd)
 	char	*read_buffer;
 	int		bytes_read;
 
-	while (ft_strfind(*buffer, '\n') == -1)
+	while (ft_strfind_c(*buffer, '\n') == -1)
 	{
 		read_buffer = ft_calloc(BUFFER_SIZE +1, sizeof(char));
 		if (!read_buffer)
@@ -76,7 +76,7 @@ static char	*buffer_new_data(char **buffer, int fd)
 // Pops the next line from the provided buffer
 static char	*get_line_from_buffer(char **buffer)
 {
-	const int	index = ft_strfind(*buffer, '\n');
+	const int	index = ft_strfind_c(*buffer, '\n');
 	const int	size = ft_strlen(*buffer);
 	char		*output;
 	char		*new_buffer;
@@ -111,7 +111,7 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || fd >= FILES_LIMIT)
 		return (NULL);
-	if (ft_strfind(buffer[fd], '\n') == -1)
+	if (ft_strfind_c(buffer[fd], '\n') == -1)
 		buffer[fd] = buffer_new_data(&buffer[fd], fd);
 	if (!buffer[fd])
 		return (NULL);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strconcat.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 09:33:42 by jhughes           #+#    #+#             */
-/*   Updated: 2024/04/15 11:10:46 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/13 09:42:04 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,16 @@ static char	**import_args(char *str, va_list argv)
 	return (array);
 }
 
+static size_t	ft_strarr_characters(char **str_array)
+{
+	size_t	size;
+
+	size = 0;
+	while (str_array && *str_array)
+		size += ft_strlen(*str_array++);
+	return (size);
+}
+
 // Concatenates 2 or more strings into a malloced string.
 // Undefined result if less than two parameters are given.
 // Caller must check for malloc fail.
@@ -77,7 +87,7 @@ char	*ft_strconcat(char *str, ...)
 	array = import_args(str, argv);
 	if (!array)
 		return (NULL);
-	size = ft_strarrlen(array);
+	size = ft_strarr_characters(array);
 	output = malloc(sizeof(char) * (size + 1));
 	if (!output)
 	{
