@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/11 15:30:42 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/13 14:47:05 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@
 # include <term.h>
 // tcsetattr, tcgetattr
 # include <termios.h>
+// boolean type
+# include <stdbool.h>
 /*
 termios structure
 struct termios

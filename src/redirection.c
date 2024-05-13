@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/10 17:22:27 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/13 15:00:14 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	heredoc_in(int pipefd_c[2], t_command command)
 	else if (pid == 0)
 	{
 		input = NULL;
-		while (1)
+		while (TRUE)
 		{
 			line = readline("\e[1;34mhere_doc> \e[0m");
 			if (!ft_strncmp(line, command.heredoc_eof, ft_strlen(line) + 1))
@@ -104,7 +104,7 @@ void	dup_out_fds(int pipefd_p[2], t_command command)
 	}
 	out_fd = STDOUT_FILENO;
 	if (command.out_redirection == SINGLE_OUT)
-		out_fd = open(command.out_file, O_CREAT | O_RDWR | O_TRUNC, 0644);
+		out_fd = open(command.out_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	else if (command.out_redirection == DOUBLE_OUT)
 		out_fd = open(command.out_file, O_CREAT | O_WRONLY | O_APPEND, 0644);
 	if (out_fd < 0)

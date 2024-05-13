@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:37:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/11 15:44:53 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/13 14:59:35 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,12 @@ void	errprint(char *format, char *fail)
 	{
 		while (*format && *format != '%')
 		{
-			ft_putchar_fd(*format, 2);
+			ft_putchar_fd(*format, STDERR_FILENO);
 			format++;
 		}
 		if (*format && !ft_strncmp(format, "%s", 2))
 		{
-			ft_putstr_fd(fail, 2);
+			ft_putstr_fd(fail, STDERR_FILENO);
 			format++;
 			format++;
 		}
