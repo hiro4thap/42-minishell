@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/20 11:27:03 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:32:47 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,5 +106,15 @@ int main(int argc, char **argv, char **envp)
 	builtin_pwd(env);
 	builtin_cd(env, "/Users/jhughes/projects/");
 	builtin_pwd(env);
+
+	ft_printf("\n\n ECHO TEST:\n\n");
+	char **echo_args = ft_split("echo HELLO", ' ');
+	// for (unsigned int i = 0; i < ft_strarr_len(echo_args); i++)
+	// {
+	// 	ft_printf("%d: %s\n", i, echo_args[i]);
+	// }
+
+	builtin_echo(ft_strarr_len(echo_args), echo_args, env);
+	ft_strarr_clear(echo_args);
 }
 */

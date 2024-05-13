@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 08:44:40 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 09:06:39 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/13 14:42:50 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,19 @@ int	builtin_echo(int argc, char **args, t_environment *env)
 		ft_putchar_fd('\n', STDOUT_FILENO);
 	else
 	{
-		if (ft_strncmp(args[1], "-n", 3))
-			new_line = 1;
-		else
+		//
+		if (ft_strncmp(args[1], "-n", 3) == 0)
 			new_line = 0;
+		else
+			new_line = 1;
 		index = new_line + 1;
+		while (index < argc)
+		{
+			if (ft_strncmp(args[index], "-n", 3) == 0)
+				index++;
+			else
+				break ;
+		}
 		while (index < argc)
 		{
 			exit_code = process_arg(args[index++], env->envp, new_line);
