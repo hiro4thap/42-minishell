@@ -1,22 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   unset.c                                            :+:      :+:    :+:   */
+/*   builtin_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/03 12:45:18 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/06 11:17:04 by jhughes          ###   ########.fr       */
+/*   Created: 2024/05/03 09:38:44 by jhughes           #+#    #+#             */
+/*   Updated: 2024/05/13 08:30:01 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/// @brief Removes ``key`` from the minishell environment if it exists.
+/// @brief Builtin: Displays all environment variables in the terminal.
 /// @param env The minishell environment.
-/// @param key The key to remove from the minishell environment.
-/// @return Exit code: 0 on sucesss, 1 otherwise.
-int	unset(t_environment *env, char *key)
+/// @return Exit code: 0 on success.
+int	builtin_env(t_environment *env)
 {
-	return (remove_var(env, key));
+	int	index;
+
+	index = 0;
+	while (index < env->size)
+		ft_putendl_fd(env->envp[index++], STDOUT_FILENO);
+	return (0);
 }

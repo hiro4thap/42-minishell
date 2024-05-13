@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/20 11:24:47 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:27:05 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,12 @@ int			set_var(t_environment *env, char *key, char *value);
 int			remove_var(t_environment *env, char *key);
 const char	*get_value(t_environment *env, char *key);
 
-int			env(t_environment *env);
-int			export(t_environment *env, char *key_value);
+int			builtin_cd(t_environment *env, char *path);
+int			builtin_echo(int argc, char **args, t_environment *env);
+int			builtin_env(t_environment *env);
+int			builtin_exit(t_environment *env);
+int			builtin_export(t_environment *env, char *key_value);
+int			builtin_pwd(t_environment *env);
+int			builtin_unset(t_environment *env, char *key);
 
 #endif

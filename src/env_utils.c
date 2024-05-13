@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:37:06 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/08 12:30:31 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/13 11:13:33 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,29 @@
 int	init_environment(t_environment **env, char **shell_env)
 {
 	const int	total_user_variables = 15;
+	int			index;
 
 	(*env) = malloc(sizeof(t_environment));
 	if (!(*env))
 		return (1);
-	(*env)->size = ft_strarrlen(shell_env);
+	(*env)->size = ft_strarr_len(shell_env);
 	(*env)->max_size = (*env)->size + total_user_variables;
-	(*env)->envp = ft_calloc((*env)->max_size, sizeof(char *));
+	(*env)->envp = ft_calloc((*env)->max_size + 1, sizeof(char *));
 	if (!(*env)->envp)
 		return (1);
+	index = 0;
+	while (index < (*env)->size)
+	{
+		char *blah = ft_strdup(shell_env[index]);
+		(*env)->envp[index] = blah;
+		if (!((*env)->envp[index]))
+		{
+			ft_strarr_clear((*env)->envp);
+			return (1);	
+		}
+		index++;
+	}
+	(*env)->envp[index] = NULL;
 	return (0);
 }
 
@@ -81,9 +95,9 @@ int	get_key_index(t_environment *env, char *key)
 /// @return Exit code: 0 on success, 1 otherwise.
 int	add_var(t_environment *env, char *key, char *value)
 {
-	const int	size = ft_strarrlen(env->envp);
+	const int	size = ft_strarr_len(env->envp);
 	char		*var;
-	char		*temp_array;
+	char		**temp_array;
 
 	var = ft_strconcat(key, "=", value, NULL);
 	if (!var)
@@ -103,6 +117,7 @@ int	add_var(t_environment *env, char *key, char *value)
 	env->envp[env->size] = env->envp[env->size - 1];
 	env->envp[size - 1] = var;
 	env->size += 1;
+	return (0);
 }
 
 /// @brief Sets value of a key, adding it to the environment if not already
@@ -152,6 +167,7 @@ int	remove_var(t_environment *env, char *key)
 				index++;
 			}
 			env->envp[index] = NULL;
+			env->size -= 1;
 		}
 		else
 			index++;

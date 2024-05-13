@@ -1,28 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exit.c                                             :+:      :+:    :+:   */
+/*   builtin_pwd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/06 14:08:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/06 14:52:58 by jhughes          ###   ########.fr       */
+/*   Created: 2024/05/03 09:11:20 by jhughes           #+#    #+#             */
+/*   Updated: 2024/05/13 11:43:21 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/// @brief Exits the shell with the exit code of that last foreground process.
+/// @brief Prints the value of the ``PWD`` key in the minishell environment.
 /// @param env The minishell environment.
-/// @return Exit status.
-int	exit(t_environment *env)
+/// @return Exit status: 0 on sucesses, 1 otherwise.
+int	builtin_pwd(t_environment *env)
 {
-	int		exit_code;
-	char	*val;
-	
-	val = get_value(env, "?");
-	exit_code = 0;
-	if (val)
-		exit_code = ft_atoi(val);
-	return (exit(exit_code));
+	char	*path;
+
+	(void) env;
+	path = getcwd(NULL, 0);
+	ft_putendl_fd(path, STDOUT_FILENO);
+	free(path);
+	return (0);
 }

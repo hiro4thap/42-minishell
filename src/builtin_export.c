@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   export.c                                           :+:      :+:    :+:   */
+/*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:07 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/06 11:16:25 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/13 08:31:02 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 /// @param key_value The key/value pair to add/set in the environment.
 /// @return Exit code:
 /// 0 on success. 1 if set_var failed.  2 if invalid key. 3 if malloc failed.
-int	export(t_environment *env, char *key_value)
+int	builtin_export(t_environment *env, char *key_value)
 {
 	char	*key;
 	int		index;

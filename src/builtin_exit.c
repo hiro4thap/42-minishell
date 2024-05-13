@@ -1,26 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/03 09:38:44 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/06 11:16:17 by jhughes          ###   ########.fr       */
+/*   Created: 2024/05/06 14:08:57 by jhughes           #+#    #+#             */
+/*   Updated: 2024/05/13 09:08:46 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/// @brief Builtin: Displays all environment variables in the terminal.
+/// @brief Exits the shell with the exit code of that last foreground process.
 /// @param env The minishell environment.
-/// @return Exit code: 0 on success.
-int	env(t_environment *env)
+/// @return Exit status.
+int	builtin_exit(t_environment *env)
 {
-	int	index;
-
-	index = 0;
-	while (index < env->size)
-		ft_putendl_fd(env->envp[index++], STDOUT_FILENO);
-	return (0);
+	int			exit_code;
+	const char	*val;
+	
+	val = get_value(env, "?");
+	exit_code = 0;
+	if (val)
+		exit_code = ft_atoi(val);
+	//return (exit(exit_code));
+	return (exit_code);
 }
