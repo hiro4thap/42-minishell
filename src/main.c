@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/25 09:18:38 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/26 15:06:24 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,14 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			continue ;
 		}
-		free(input);
 		validate_redirection(trimmed_input);
 		if (*trimmed_input)
-			commands(trimmed_input, env);
+		{
+			add_history(input);
+			rl_on_new_line();
+			commands(trimmed_input, envp);
+		}
+		free(input);
 		free(trimmed_input);
 	}
 	return (EXIT_SUCCESS);
