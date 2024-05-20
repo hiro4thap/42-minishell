@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 16:17:23 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/08 12:18:36 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/16 17:37:26 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ int		ft_strfind(char *haystack, char *needle);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strtrim(char const *s1, char const *set);
+char	**ft_split_ws(const char *s);
 char	**ft_split(char const *s, char c);
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 char	*ft_striteri(char *s, void (*f)(unsigned int, char *));
@@ -87,12 +88,14 @@ char	**ft_strarr_resize(char **arr, int size);
 
 int		ft_atoi(const char *nptr);
 char	*ft_itoa(int n);
-int		ft_toupper(int c);
-int		ft_tolower(int c);
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
 int		ft_isalnum(int c);
 int		ft_isascii(int c);
 int		ft_isprint(int c);
+int		ft_isspace(int c);
+int		ft_isxdigit(int c);
+int		ft_tolower(int c);
+int		ft_toupper(int c);
 
 #endif
