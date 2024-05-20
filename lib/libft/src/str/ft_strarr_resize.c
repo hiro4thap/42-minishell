@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strarr_resize.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 11:50:51 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 10:58:22 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/16 17:36:45 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,7 @@ char	**ft_strarr_resize(char **arr, int size)
 	index = 0;
 	while (index < current_size && index < size)
 	{
-		char *blah = ft_strdup(arr[index]);
-		new_array[index] = blah;
+		new_array[index] = ft_strdup(arr[index]);
 		index++;
 	}
 	new_array[index] = NULL;
