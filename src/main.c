@@ -6,11 +6,24 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/26 15:06:24 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/26 15:08:00 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+
+void	signal_handler(int sig, siginfo_t *info, void *context)
+{
+	(void) info;
+	(void) context;
+	if (sig == SIGINT)
+	{
+        printf("\n");
+        rl_on_new_line();
+        rl_replace_line("", 0);
+        rl_redisplay();
+	}
+}
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -19,7 +32,13 @@ int	main(int argc, char **argv, char **envp)
 	t_environment	*env;
 
 	(void) argc;
+	(void) argv;
 	init_environment(&env, argv[0], envp);
+	struct sigaction sa;
+	sa.sa_sigaction = signal_handler;
+	sa.sa_flags = SA_SIGINFO;
+	sigaction(SIGINT, &sa, NULL); // Ctrl C
+	sigaction(SIGQUIT, &sa, NULL); // Ctrl backslash
 	while (TRUE)
 	{
 		input = readline("\e[1;34m> \e[0m");
