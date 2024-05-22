@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/20 12:05:51 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/22 21:50:56 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int			remove_var(t_environment *env, char *key);
 const char	*get_value(t_environment *env, char *key);
 t_command	parse_command(char *cmd);
 void		validate_redirection(char *str);
-void		commands(char *input, char **envp);
+void		commands(char *input, t_environment *envp);
 void		dup_out_fds(int pipefd_p[2], t_command command);
 void		dup_in_fds(int pipefd_c[2], t_command command, int index);
 
@@ -107,12 +107,12 @@ int			is_quote(char c);
 int			is_spacetab(char c);
 int			is_anglebracket(char c);
 
-int			builtin_cd(t_environment *env, char *path);
+int			builtin_cd(t_command command, t_environment *env);
 int			builtin_echo(int argc, char **args, t_environment *env);
 int			builtin_env(t_environment *env);
 int			builtin_exit(t_environment *env);
-int			builtin_export(t_environment *env, char *key_value);
+int			builtin_export(t_command command, t_environment *env);
 int			builtin_pwd(t_environment *env);
-int			builtin_unset(t_environment *env, char *key);
+int			builtin_unset(t_command command, t_environment *env);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/20 11:32:47 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/22 20:59:31 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 
 int	main(int argc, char **argv, char **envp)
 {
-	char	*input;
-	char	*trimmed_input;
+	char			*input;
+	char			*trimmed_input;
+	t_environment	*env;
 
 	(void) argc;
 	(void) argv;
+	init_environment(&env, envp);
 	while (TRUE)
 	{
 		input = readline("\e[1;34m> \e[0m");
@@ -32,7 +34,7 @@ int	main(int argc, char **argv, char **envp)
 		free(input);
 		validate_redirection(trimmed_input);
 		if (*trimmed_input)
-			commands(trimmed_input, envp);
+			commands(trimmed_input, env);
 		free(trimmed_input);
 	}
 	return (EXIT_SUCCESS);

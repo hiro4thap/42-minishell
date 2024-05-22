@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/20 12:07:50 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/22 21:59:19 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,29 +28,67 @@ char	**get_envp_path(char **envp)
 	return (envp_path);
 }
 
+bool	is_builtin(t_command command)
+{
+	if (ft_strncmp(command.command[0], "cd", 2) == 0
+		|| ft_strncmp(command.command[0], "echo", 4) == 0
+		|| ft_strncmp(command.command[0], "env", 3) == 0
+		|| ft_strncmp(command.command[0], "exit", 4) == 0
+		|| ft_strncmp(command.command[0], "export", 6) == 0
+		|| ft_strncmp(command.command[0], "pwd", 3) == 0
+		|| ft_strncmp(command.command[0], "unset", 5) == 0)
+		return (TRUE);
+	return (FALSE);
+}
+
+int	run_builtin(t_command command, t_environment *envp)
+{
+	if (!ft_strncmp(command.command[0], "echo", 5))
+		return (builtin_echo(ft_strarr_len(command.command),
+				command.command, envp));
+	else if (!ft_strncmp(command.command[0], "cd", 3))
+		return (builtin_cd(command, envp));
+	else if (!ft_strncmp(command.command[0], "pwd", 4))
+		return (builtin_pwd(envp));
+	else if (!ft_strncmp(command.command[0], "export", 7))
+		return (builtin_export(command, envp));
+	else if (!ft_strncmp(command.command[0], "unset", 6))
+		return (builtin_unset(command, envp));
+	else if (!ft_strncmp(command.command[0], "env", 4))
+		return (builtin_env(envp));
+	else if (!ft_strncmp(command.command[0], "exit", 5))
+		exit(builtin_exit(envp));
+	return (EXIT_COMMAND_NOT_EXIST);
+}
+
 /// @brief searching executable file in PATH directories before execution.
 /// If file is not found, a message will be displayed
 /// @param command t_command structure to be execute
 /// @param envp TODO:should be replaced by get_value functions
-void	execute_simple_command(t_command command, char **envp)
+void	execute_simple_command(t_command command, t_environment *envp)
 {
 	char	**dirs;
 	int		i;
 	char	*cmd;
 
-	dirs = get_envp_path(envp); //TODO:get_value from env vars
-	i = 0;
-	while (dirs[i])
+	if (is_builtin(command))
+		exit(run_builtin(command, envp));
+	else
 	{
-		cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
-		execve(cmd, command.command, envp);
-		free(cmd);
-		i++;
+		dirs = get_envp_path(envp->envp); //TODO:get_value from env vars
+		i = 0;
+		while (dirs[i])
+		{
+			cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
+			execve(cmd, command.command, envp->envp);
+			free(cmd);
+			i++;
+		}
+		errprint("command not found: %s\n", command.command[0]);
+		ft_strarr_clear(dirs); //TODO:needs to check if get_value allocates memory
+		ft_strarr_clear(command.command);
+		exit(EXIT_COMMAND_NOT_EXIST);
 	}
-	errprint("command not found: %s\n", command.command[0]);
-	ft_strarr_clear(dirs); //TODO:needs to check if get_value allocates memory
-	ft_strarr_clear(command.command);
-	exit(EXIT_COMMAND_NOT_EXIST);
 }
 
 /// @brief parent process handles file descripter and exectue simple command
@@ -61,7 +99,7 @@ void	execute_simple_command(t_command command, char **envp)
 /// @param index index for the simple command to execute
 /// @param envp TODO:should be replaced by get_value functions
 void	execute_commands(
-		char **commands, int pipefd_p[2], int index, char **envp)
+		char **commands, int pipefd_p[2], int index, t_environment *envp)
 {
 	int			pipefd_c[2];
 	int			pid;
@@ -88,7 +126,7 @@ void	execute_commands(
 /// @brief split the whole command into chanks by pipelines before execution
 /// @param input the string input through prompt
 /// @param envp TODO:should be replaced by get_value functions
-void	commands(char *input, char **envp)
+void	commands(char *input, t_environment *envp)
 {
 	char	**commands;
 	int		arrlen;
@@ -96,6 +134,19 @@ void	commands(char *input, char **envp)
 
 	commands = ft_split(input, '|');
 	arrlen = ft_arrlen(commands);
+	if (arrlen == 1)
+	{
+		// Check for whitespace?
+		if (ft_strncmp(*commands, "export", 6) == 0
+			|| ft_strncmp(*commands, "unset", 5) == 0
+			|| ft_strncmp(*commands, "cd", 2) == 0
+			|| ft_strncmp(*commands, "exit", 4) == 0)
+		{
+			run_builtin(parse_command(*commands), envp);
+			ft_strarr_clear(commands);
+			return ;
+		}
+	}
 	pid = fork();
 	if (pid == -1)
 		exit(EXIT_FAILURE);

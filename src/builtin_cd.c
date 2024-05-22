@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:46:37 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/20 11:53:23 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/22 21:08:32 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static void	error(char *error_string, char *path)
 /// @param path The path. Can be absolute (defined from root), or relative
 /// (to current directory).
 /// @return Exit Code: 0 on success, 1 otherwise.
-int	builtin_cd(t_environment *env, char *path)
+int	builtin_cd(t_command command, t_environment *env)
 {
 	// Check if absolute (starts with /) or relative (should match file, including . or ..)
 	// Generate absolute path if ``path`` is relative path.
@@ -45,8 +45,12 @@ int	builtin_cd(t_environment *env, char *path)
 
 	// At least when home is set to an invalid path, it should include the path
 	// after cd: like "cd: hello: invalid path"
-	ft_printf("Path: %s\n", path);
-	if (path && !(*path))
+	int	argc;
+
+	argc = ft_strarr_len(command.command);
+	if (argc > 2)
+		error("minishell: cd: too many arguments", NULL);
+	if (argc == 1)
 	{
 		const char *home = get_value(env, "HOME");
 		if (!home)
@@ -56,14 +60,14 @@ int	builtin_cd(t_environment *env, char *path)
 		}
 		if (chdir(home) != 0)
 		{
-			error("minishell: cd: ", path);
+			error("minishell: cd: ", NULL);
 		}
 		return (0);
 	}
 	(void) env;
-	if (chdir(path) != 0)
+	if (chdir(command.command[1]) != 0)
 	{
-		error("minishell: cd: ", path);
+		error("minishell: cd: ", command.command[1]);
 	}
 	return (0);
 }

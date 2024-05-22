@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:07 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/20 11:53:12 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/22 21:49:59 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,19 @@
 /// @param key_value The key/value pair to add/set in the environment.
 /// @return Exit code:
 /// 0 on success. 1 if set_var failed.  2 if invalid key. 3 if malloc failed.
-int	builtin_export(t_environment *env, char *key_value)
+int	builtin_export(t_command command, t_environment *env)
 {
 	char	*key;
 	int		index;
 	int		status;
 
-	index = ft_strfind(key_value, "=");
+	index = ft_strfind(command.command[1], "=");
 	if (index == -1)
 		return (1);
-	key = ft_substr(key_value, 0, index);
+	key = ft_substr(command.command[1], 0, index);
 	if (!key)
 		return (2);
-	status = set_var(env, key, ft_strchr(key_value, '=') + 1);
+	status = set_var(env, key, ft_strchr(command.command[1], '=') + 1);
 	free(key);
 	return (status);
 }
