@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:08:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 09:08:46 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:53:15 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 /// @brief Exits the shell with the exit code of that last foreground process.
 /// @param env The minishell environment.

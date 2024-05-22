@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:46:37 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 14:30:27 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:53:23 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 static void	error(char *error_string, char *path)
 {

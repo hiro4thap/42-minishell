@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:37:06 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 11:13:33 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:53:00 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 /// @brief Initialises environment from the calling shells environment.
 /// @param[out] env Environment pointer to be initialised. 

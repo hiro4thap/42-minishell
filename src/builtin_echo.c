@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 08:44:40 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 14:42:50 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 12:16:53 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 static int	process_arg(char *str, char **envp, int new_line)
 {
@@ -53,6 +53,7 @@ int	builtin_echo(int argc, char **args, t_environment *env)
 		while (index < argc)
 		{
 			exit_code = process_arg(args[index++], env->envp, new_line);
+			exit_code += 0;
 			// if (exit_code != 0)
 			// 	return (error());
 		}

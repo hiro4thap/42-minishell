@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 09:38:44 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 08:30:01 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:53:18 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 /// @brief Builtin: Displays all environment variables in the terminal.
 /// @param env The minishell environment.

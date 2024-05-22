@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:07 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 08:31:02 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:53:12 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 /// @brief Builtin: Adds/sets the value of a key/value pair in the form of
 /// ``key=value`` to the minishell environment

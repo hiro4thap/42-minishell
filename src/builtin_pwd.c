@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_pwd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 09:11:20 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 11:43:21 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:53:25 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 /// @brief Prints the value of the ``PWD`` key in the minishell environment.
 /// @param env The minishell environment.

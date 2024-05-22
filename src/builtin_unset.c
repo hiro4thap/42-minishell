@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_unset.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:18 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/13 08:31:27 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/20 11:53:28 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 /// @brief Removes ``key`` from the minishell environment if it exists.
 /// @param env The minishell environment.
