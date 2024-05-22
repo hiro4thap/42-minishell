@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/25 11:10:09 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/26 15:10:22 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,6 @@
 # include <dirent.h>
 // open
 # include <fcntl.h>
-// readline, rl_clear_history, rl_on_new_line, rl_replace_line, rl_redisplay,
-// add_history
-# include <readline/readline.h>
-# include <readline/history.h>
 // signal, sigaction, sigemptyset, sigaddset, kill
 # include <signal.h>
 // printf, perror
@@ -45,6 +41,10 @@
 # include <termios.h>
 // boolean type
 # include <stdbool.h>
+// readline, rl_clear_history, rl_on_new_line, rl_replace_line, rl_redisplay,
+// add_history
+# include <readline/readline.h>
+# include <readline/history.h>
 /*
 termios structure
 struct termios
@@ -103,6 +103,7 @@ void		validate_redirection(char *str);
 void		commands(char *input, t_environment *envp);
 void		dup_out_fds(int pipefd_p[2], t_command command);
 void		dup_in_fds(int pipefd_c[2], t_command command, int index);
+void		init_signal_handler(void);
 
 void		errprint(char *msg, char *fail);
 char		*trim_quote(char *token);
