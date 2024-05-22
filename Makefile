@@ -36,13 +36,13 @@ re: fclean all
 
 $(NAME): $(O_FILES_DIR)
 	make -C $(LINK_LIBFT)
-	$(COMPILER) $(CFLAGS) -I$(INCL) -I$(INCL_LIBFT) $(LIBS) $(O_FILES_DIR) -o $@
+	$(COMPILER) $(CFLAGS) -I$(INCL) -I$(INCL_LIBFT) $(O_FILES_DIR) $(LIBS) -o $@
 
 $(O_DIR)%.o: $(SRC_DIR)%.c
 	mkdir -p obj/
 	$(COMPILER) $(CFLAGS) -I$(INCL) -I$(INCL_LIBFT) -c $< -o $@
 
 debug: $(C_FILES_DIR)
-	$(COMPILER) $(CFLAGS) -I$(INCL) -I$(INCL_LIBFT) $(LIBS) $(C_FILES_DIR) -g -o $@
+	$(COMPILER) $(CFLAGS) -I$(INCL) -I$(INCL_LIBFT) $(C_FILES_DIR) $(LIBS) -g -o $@
 
 .PHONY: all clean fclean re
