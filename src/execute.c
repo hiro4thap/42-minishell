@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse.c                                            :+:      :+:    :+:   */
+/*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/11 15:30:31 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/20 12:07:50 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ void	execute_simple_command(t_command command, char **envp)
 		i++;
 	}
 	errprint("command not found: %s\n", command.command[0]);
-	ft_strclear(dirs); //TODO:needs to check if get_value allocates memory
-	ft_strclear(command.command);
+	ft_strarr_clear(dirs); //TODO:needs to check if get_value allocates memory
+	ft_strarr_clear(command.command);
 	exit(EXIT_COMMAND_NOT_EXIST);
 }
 
@@ -103,5 +103,5 @@ void	commands(char *input, char **envp)
 		execute_commands(commands, NULL, arrlen - 1, envp);
 	if (0 < pid)
 		waitpid(pid, 0, 0);
-	ft_strclear(commands);
+	ft_strarr_clear(commands);
 }
