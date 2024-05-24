@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/22 21:59:19 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/24 14:21:00 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,24 +71,44 @@ void	execute_simple_command(t_command command, t_environment *envp)
 	int		i;
 	char	*cmd;
 
-	if (is_builtin(command))
+	char	*pwd = "/Users/hiono/Documents/minishell"; // TODO: should be deleted
+	dirs = NULL; //TODO: cleared by spliting functions
+	cmd = NULL; //TODO: cleared by spliting functions
+	if (command.command[0][0] == '.')
+	{
+		cmd = ft_strconcat(pwd, "/", command.command[0], NULL); // TODO: "pwd" should be replaced by the function to get current directory
+		execve(cmd, command.command, envp->envp);
+		free(cmd);
+	}
+	else if (command.command[0][0] == '/')
+		execve(command.command[0], command.command, envp->envp);
+	else if (is_builtin(command))
 		exit(run_builtin(command, envp));
 	else
 	{
 		dirs = get_envp_path(envp->envp); //TODO:get_value from env vars
-		i = 0;
-		while (dirs[i])
+		if (!dirs || !*dirs) //TODO: what the function returns when it's empty
 		{
-			cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
+			cmd = ft_strconcat(pwd, "/", command.command[0], NULL); // TODO: "pwd" should be replaced by the function to get current directory
 			execve(cmd, command.command, envp->envp);
 			free(cmd);
-			i++;
 		}
-		errprint("command not found: %s\n", command.command[0]);
-		ft_strarr_clear(dirs); //TODO:needs to check if get_value allocates memory
-		ft_strarr_clear(command.command);
-		exit(EXIT_COMMAND_NOT_EXIST);
+		else
+		{
+			i = 0;
+			while (dirs[i])
+			{
+				cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
+				execve(cmd, command.command, envp->envp);
+				free(cmd);
+				i++;
+			}
+		}
 	}
+	errprint("command not found: %s\n", command.command[0]);
+	ft_strarr_clear(dirs); //TODO:needs to check if get_value allocates memory
+	ft_strarr_clear(command.command);
+	exit(EXIT_COMMAND_NOT_EXIST);
 }
 
 /// @brief parent process handles file descripter and exectue simple command
@@ -112,7 +132,7 @@ void	execute_commands(
 		exit(EXIT_FAILURE);
 	if (0 < pid)
 	{
-		command = parse_command(commands[index]);
+		command = parse_command(commands[index], envp);
 		dup_in_fds(pipefd_c, command, index);
 		dup_out_fds(pipefd_p, command);
 		execute_simple_command(command, envp);
@@ -142,7 +162,7 @@ void	commands(char *input, t_environment *envp)
 			|| ft_strncmp(*commands, "cd", 2) == 0
 			|| ft_strncmp(*commands, "exit", 4) == 0)
 		{
-			run_builtin(parse_command(*commands), envp);
+			run_builtin(parse_command(*commands, envp), envp);
 			ft_strarr_clear(commands);
 			return ;
 		}

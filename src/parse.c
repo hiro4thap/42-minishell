@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 16:11:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/11 15:29:19 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/24 15:42:43 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	count_command(char *simple_command)
 		simple_command++;
 	while (simple_command)
 	{
-		if (is_quote(*simple_command))
+		if (is_anglebracket(*simple_command))
 		{
 			simple_command = point_next_token(point_next_token(simple_command));
 			continue ;
@@ -115,7 +115,7 @@ t_command	handle_redirections(
 /// @brief parse a simple command by splitting it into tokens
 /// @param simple_command a command split by pipeline
 /// @return [MALLOC] t_command instance with parameters filled
-t_command	parse_command(char *simple_command)
+t_command	parse_command(char *simple_command, t_environment *env)
 {
 	int			i;
 	int			len;
@@ -134,10 +134,10 @@ t_command	parse_command(char *simple_command)
 		{
 			command = handle_redirections(token, simple_command, command);
 			simple_command = point_next_token(simple_command);
-			free(token);
 		}
 		else
-			command.command[i++] = trim_quote(token);
+			command.command[i++] = expand_variable(token, env);
+		free(token);
 		simple_command = point_next_token(simple_command);
 	}
 	command.command[i] = NULL;
