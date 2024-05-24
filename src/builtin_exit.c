@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:08:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/22 21:56:42 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/24 18:12:27 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ int	builtin_exit(t_environment *env)
 	exit_code = 0;
 	if (val)
 		exit_code = ft_atoi(val);
+	ft_putendl_fd("exit", STDOUT_FILENO);
 	exit(exit_code);
 	return (exit_code);
 }
