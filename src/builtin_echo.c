@@ -6,20 +6,26 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 08:44:40 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/20 12:16:53 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/24 18:10:53 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-static int	process_arg(char *str, char **envp, int new_line)
+static int	is_flag(char *arg)
 {
-	(void) envp;
-	if (new_line)
-		ft_putendl_fd(str, STDOUT_FILENO);
-	else
-		ft_putstr_fd(str, STDOUT_FILENO);
-	return (0);
+	while (ft_isspace(*arg))
+		arg++;
+	if (*arg != '-')
+		return (0);
+	arg++;
+	while (*arg == 'n')
+		arg++;
+	while (ft_isspace(*arg))
+		arg++;
+	if (*arg != '\0')
+		return (0);
+	return (1);
 }
 
 /// @brief Prints out a string of arguments, evaluating 
@@ -31,32 +37,27 @@ int	builtin_echo(int argc, char **args, t_environment *env)
 {
 	int	new_line;
 	int	index;
-	int	exit_code;
 
+	(void) env;
 	if (argc == 1)
 		ft_putchar_fd('\n', STDOUT_FILENO);
 	else
 	{
-		//
-		if (ft_strncmp(args[1], "-n", 3) == 0)
+		index = 1;
+		new_line = 1;
+		if (is_flag(args[1]))
 			new_line = 0;
-		else
-			new_line = 1;
-		index = new_line + 1;
+		while (is_flag(args[index]) && index < argc)
+			index++;
 		while (index < argc)
 		{
-			if (ft_strncmp(args[index], "-n", 3) == 0)
-				index++;
-			else
-				break ;
+			ft_putstr_fd(args[index], STDOUT_FILENO);
+			index++;
+			if (index != argc)
+				ft_putchar_fd(' ', STDOUT_FILENO);
 		}
-		while (index < argc)
-		{
-			exit_code = process_arg(args[index++], env->envp, new_line);
-			exit_code += 0;
-			// if (exit_code != 0)
-			// 	return (error());
-		}
+		if (new_line)
+			ft_putchar_fd('\n', STDOUT_FILENO);
 	}
 	return (0);
 }
