@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/22 21:50:56 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 11:10:09 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,16 @@ struct termios
 # include "../lib/libft/includes/libft.h"
 
 # define EXIT_COMMAND_NOT_EXIST 127
+# define EXIT_NO_MEMORY 3
 
 /// @brief The minishell environment
 typedef struct s_environment
 {
-	char	**envp;
-	int		size;
-	int		max_size;
+	const char	*shell;
+	char		**envp;
+	int			size;
+	int			max_size;
+	int			exit_code;
 }	t_environment;
 
 typedef struct s_command
@@ -87,7 +90,8 @@ typedef enum e_redirection
 	DOUBLE_OUT
 }	t_redirection;
 
-int			init_environment(t_environment **env, char **shell_env);
+int			init_environment(t_environment **env,
+				char *shell, char **shell_env);
 const char	*get_key(t_environment *env, char *key);
 int			get_key_index(t_environment *env, char *key);
 int			add_var(t_environment *env, char *key, char *value);

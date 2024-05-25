@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/22 20:59:31 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 09:18:38 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ int	main(int argc, char **argv, char **envp)
 	t_environment	*env;
 
 	(void) argc;
-	(void) argv;
-	init_environment(&env, envp);
+	init_environment(&env, argv[0], envp);
 	while (TRUE)
 	{
 		input = readline("\e[1;34m> \e[0m");

@@ -6,43 +6,65 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:37:06 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/20 11:53:00 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 11:30:45 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
+static char	*get_file_from_path(char *path)
+{
+	char	*str;
+
+	if (!path)
+		return (NULL);
+	str = ft_strrchr(path, '/');
+	if (str && *(str + 1))
+		return (str + 1);
+	return (path);
+}
+
+static int	allocate(void **pointer, void *malloc_return)
+{
+	*pointer = malloc_return;
+	if (*pointer)
+		return (EXIT_SUCCESS);
+	else
+		return (EXIT_FAILURE);
+}
+
 /// @brief Initialises environment from the calling shells environment.
 /// @param[out] env Environment pointer to be initialised. 
+/// @param[in] shell Name of shell from main arguments.
 /// @param[in] shell_env Environment from calling process.
 /// @return Exit code: 0 on success, 1 otherwise.
-int	init_environment(t_environment **env, char **shell_env)
+int	init_environment(t_environment **env, char *shell, char **shell_env)
 {
 	const int	total_user_variables = 15;
 	int			index;
 
-	(*env) = malloc(sizeof(t_environment));
-	if (!(*env))
-		return (1);
+	if (allocate((void **) env, malloc(sizeof(t_environment))) == EXIT_FAILURE)
+		return (EXIT_FAILURE);
 	(*env)->size = ft_strarr_len(shell_env);
 	(*env)->max_size = (*env)->size + total_user_variables;
-	(*env)->envp = ft_calloc((*env)->max_size + 1, sizeof(char *));
-	if (!(*env)->envp)
-		return (1);
+	if (allocate((void **) &((*env)->envp),
+			ft_calloc((*env)->max_size + 1, sizeof(char *))) == EXIT_FAILURE)
+		return (EXIT_FAILURE);
+	(*env)->shell = get_file_from_path(shell);
+	(*env)->exit_code = EXIT_SUCCESS;
 	index = 0;
 	while (index < (*env)->size)
 	{
-		char *blah = ft_strdup(shell_env[index]);
-		(*env)->envp[index] = blah;
-		if (!((*env)->envp[index]))
+		if (allocate((void **) &(*env)->envp[index],
+				ft_strdup(shell_env[index])) == EXIT_FAILURE)
 		{
 			ft_strarr_clear((*env)->envp);
-			return (1);	
+			return (EXIT_FAILURE);
 		}
 		index++;
 	}
 	(*env)->envp[index] = NULL;
-	return (0);
+	return (EXIT_SUCCESS);
 }
 
 /// @brief Searches the minishell environment for the specified key.
@@ -69,7 +91,8 @@ const char	*get_key(t_environment *env, char *key)
 /// @brief Searches the minishell environment for the specified key.
 /// @param env The minishell environment.
 /// @param key The key being searched for.
-/// @return Position index of key in minishell environment array.
+/// @return Position index of key in minishell environment array, -1 if not 
+/// found.
 int	get_key_index(t_environment *env, char *key)
 {
 	int	index;
@@ -101,15 +124,14 @@ int	add_var(t_environment *env, char *key, char *value)
 
 	var = ft_strconcat(key, "=", value, NULL);
 	if (!var)
-	{
-		// Handle Error
-	}
+		return (EXIT_NO_MEMORY);
 	if (env->size == env->max_size)
 	{
 		temp_array = ft_strarr_resize(env->envp, env->size + 10);
 		if (!temp_array)
 		{
-			// Handle Error
+			free(var);
+			return (EXIT_NO_MEMORY);
 		}
 		env->envp = temp_array;
 		env->max_size += 10;
@@ -136,12 +158,10 @@ int	set_var(t_environment *env, char *key, char *value)
 		return (add_var(env, key, value));
 	var = ft_strconcat(key, "=", value, NULL);
 	if (!var)
-	{
-		// Handle Error
-	}
+		return (EXIT_NO_MEMORY);
 	free(env->envp[index]);
 	env->envp[index] = var;
-	return (0);
+	return (EXIT_SUCCESS);
 }
 
 /// @brief Removes key from the minishell environment if it exists.
