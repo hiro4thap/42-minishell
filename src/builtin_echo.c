@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 08:44:40 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/24 18:10:53 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 09:58:11 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,15 @@ static int	is_flag(char *arg)
 	while (ft_isspace(*arg))
 		arg++;
 	if (*arg != '-')
-		return (0);
+		return (FALSE);
 	arg++;
 	while (*arg == 'n')
 		arg++;
 	while (ft_isspace(*arg))
 		arg++;
 	if (*arg != '\0')
-		return (0);
-	return (1);
+		return (FALSE);
+	return (TRUE);
 }
 
 /// @brief Prints out a string of arguments, evaluating 
@@ -46,7 +46,7 @@ int	builtin_echo(int argc, char **args, t_environment *env)
 		index = 1;
 		new_line = 1;
 		if (is_flag(args[1]))
-			new_line = 0;
+			new_line = FALSE;
 		while (is_flag(args[index]) && index < argc)
 			index++;
 		while (index < argc)
@@ -59,5 +59,5 @@ int	builtin_echo(int argc, char **args, t_environment *env)
 		if (new_line)
 			ft_putchar_fd('\n', STDOUT_FILENO);
 	}
-	return (0);
+	return (EXIT_SUCCESS);
 }
