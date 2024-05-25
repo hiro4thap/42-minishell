@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:07 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/25 11:13:37 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 11:53:13 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int	error(t_environment *env, const char *path, const char *error)
 			path, "\': ", error, NULL);
 	if (!message)
 	{
-		perror("minishell: cd");
+		perror("minishell: export");
 		exit(EXIT_FAILURE);
 	}
 	ft_putendl_fd(message, STDERR_FILENO);
