@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/25 23:14:53 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 23:37:14 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ int	run_builtin(t_command command, t_environment *envp)
 		exit_code = builtin_env(envp);
 	else if (!ft_strncmp(command.command[0], "exit", 5))
 		exit_code = EXIT_SUCCESS;
-	delete_command(command);
 	return (exit_code);
 }
 
