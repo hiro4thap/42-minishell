@@ -6,26 +6,37 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:46:37 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/22 21:08:32 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 11:20:51 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-static void	error(char *error_string, char *path)
+/// @brief Prints an error to the Standard Error, utilising the error number 
+/// strings where applicable.
+/// @param env The minishell environment, to get the shell name.
+/// @param path The command or path used to cause an error.
+/// @param error The error message to display. If NULL, strerror is used.
+/// @return 
+static int	error(t_environment *env, const char *path, const char *error)
 {
-	char *str;
+	char	*message;
 
-	if (!path)
+	message = ft_strconcat((char *) env->shell, ": cd: ", path, NULL);
+	if (!message)
 	{
-		perror(error_string);
+		perror("minishell: cd");
+		exit(EXIT_FAILURE);
 	}
+	if (!error)
+		perror(message);
 	else
 	{
-		str = ft_strjoin(error_string, path);
-		perror(str);
-		free(str);
+		message = ft_strjoin(message, error);
+		ft_putendl_fd(message, STDERR_FILENO);
 	}
+	free(message);
+	return (EXIT_FAILURE);
 }
 
 /// @brief Changes the current working directory based on ``path``.
@@ -35,39 +46,29 @@ static void	error(char *error_string, char *path)
 /// @return Exit Code: 0 on success, 1 otherwise.
 int	builtin_cd(t_command command, t_environment *env)
 {
-	// Check if absolute (starts with /) or relative (should match file, including . or ..)
-	// Generate absolute path if ``path`` is relative path.
-	// Validate absolute path for existence and accessibility.
-	// If valid, updated current directory, else return appropriate error.
-	
-	// cd with no args should try to access $HOME.
-	// ft_putendl_fd("minishell: cd: HOME not set");
+	const int	argc = ft_strarr_len(command.command);
+	const char	*home = get_value(env, "HOME");
+	int			index;
+	char		*path;
 
-	// At least when home is set to an invalid path, it should include the path
-	// after cd: like "cd: hello: invalid path"
-	int	argc;
-
-	argc = ft_strarr_len(command.command);
 	if (argc > 2)
-		error("minishell: cd: too many arguments", NULL);
+		return (error(env, NULL, "too many arguments"));
 	if (argc == 1)
 	{
-		const char *home = get_value(env, "HOME");
 		if (!home)
-		{
-			ft_putendl_fd("minishell: cd: HOME not set", STDERR_FILENO);
-			return (1);
-		}
+			return (error(env, NULL, "HOME not set"));
 		if (chdir(home) != 0)
-		{
-			error("minishell: cd: ", NULL);
-		}
-		return (0);
+			return (error(env, home, NULL));
+		return (EXIT_SUCCESS);
 	}
-	(void) env;
 	if (chdir(command.command[1]) != 0)
+		return (error(env, command.command[1], NULL));
+	index = get_key_index(env, "PWD");
+	if (index != -1)
 	{
-		error("minishell: cd: ", command.command[1]);
+		path = getcwd(NULL, 0);
+		set_var(env, "PWD", path);
+		free(path);
 	}
-	return (0);
+	return (EXIT_SUCCESS);
 }
