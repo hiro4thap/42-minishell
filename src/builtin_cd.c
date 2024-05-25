@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:46:37 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/25 11:20:51 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 16:05:00 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,25 @@ static int	error(t_environment *env, const char *path, const char *error)
 	return (EXIT_FAILURE);
 }
 
+/// @brief After a sucessful cd, updated PWD in environment vars if set.
+/// @param env THe minishell environment.
+/// @return Exit code: 0 on success, 1 otherwise.
+static int	update_pwd(t_environment *env)
+{
+	int		index;
+	char	*path;
+	int		exit_code;
+
+	index = get_key_index(env, "PWD");
+	if (index != -1)
+	{
+		path = getcwd(NULL, 0);
+		exit_code = set_var(env, "PWD", path);
+		free(path);
+	}
+	return (exit_code);
+}
+
 /// @brief Changes the current working directory based on ``path``.
 /// @param env The minishell environment.
 /// @param path The path. Can be absolute (defined from root), or relative
@@ -48,8 +67,6 @@ int	builtin_cd(t_command command, t_environment *env)
 {
 	const int	argc = ft_strarr_len(command.command);
 	const char	*home = get_value(env, "HOME");
-	int			index;
-	char		*path;
 
 	if (argc > 2)
 		return (error(env, NULL, "too many arguments"));
@@ -59,16 +76,11 @@ int	builtin_cd(t_command command, t_environment *env)
 			return (error(env, NULL, "HOME not set"));
 		if (chdir(home) != 0)
 			return (error(env, home, NULL));
+		update_pwd(env);
 		return (EXIT_SUCCESS);
 	}
 	if (chdir(command.command[1]) != 0)
 		return (error(env, command.command[1], NULL));
-	index = get_key_index(env, "PWD");
-	if (index != -1)
-	{
-		path = getcwd(NULL, 0);
-		set_var(env, "PWD", path);
-		free(path);
-	}
+	update_pwd(env);
 	return (EXIT_SUCCESS);
 }
