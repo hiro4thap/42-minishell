@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:46:37 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/25 16:05:00 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 16:19:00 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ static int	update_pwd(t_environment *env)
 	char	*path;
 	int		exit_code;
 
+	exit_code = EXIT_SUCCESS;
 	index = get_key_index(env, "PWD");
 	if (index != -1)
 	{
