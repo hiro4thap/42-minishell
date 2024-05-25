@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 09:38:44 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/20 11:53:18 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 09:57:27 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,5 @@ int	builtin_env(t_environment *env)
 	index = 0;
 	while (index < env->size)
 		ft_putendl_fd(env->envp[index++], STDOUT_FILENO);
-	return (0);
+	return (EXIT_SUCCESS);
 }
