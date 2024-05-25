@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/22 21:59:19 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/25 23:14:53 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,37 +28,46 @@ char	**get_envp_path(char **envp)
 	return (envp_path);
 }
 
+void	delete_command(t_command command)
+{
+	ft_strarr_clear(command.command);
+}
+
 bool	is_builtin(t_command command)
 {
-	if (ft_strncmp(command.command[0], "cd", 2) == 0
-		|| ft_strncmp(command.command[0], "echo", 4) == 0
-		|| ft_strncmp(command.command[0], "env", 3) == 0
-		|| ft_strncmp(command.command[0], "exit", 4) == 0
-		|| ft_strncmp(command.command[0], "export", 6) == 0
-		|| ft_strncmp(command.command[0], "pwd", 3) == 0
-		|| ft_strncmp(command.command[0], "unset", 5) == 0)
+	if (ft_strncmp(command.command[0], "cd", 3) == 0
+		|| ft_strncmp(command.command[0], "echo", 5) == 0
+		|| ft_strncmp(command.command[0], "env", 4) == 0
+		|| ft_strncmp(command.command[0], "exit", 5) == 0
+		|| ft_strncmp(command.command[0], "export", 7) == 0
+		|| ft_strncmp(command.command[0], "pwd", 4) == 0
+		|| ft_strncmp(command.command[0], "unset", 6) == 0)
 		return (TRUE);
 	return (FALSE);
 }
 
 int	run_builtin(t_command command, t_environment *envp)
 {
+	int	exit_code;
+
+	exit_code = EXIT_COMMAND_NOT_EXIST;
 	if (!ft_strncmp(command.command[0], "echo", 5))
-		return (builtin_echo(ft_strarr_len(command.command),
-				command.command, envp));
+		exit_code = builtin_echo(ft_strarr_len(command.command),
+				command.command, envp);
 	else if (!ft_strncmp(command.command[0], "cd", 3))
-		return (builtin_cd(command, envp));
+		exit_code = builtin_cd(command, envp);
 	else if (!ft_strncmp(command.command[0], "pwd", 4))
-		return (builtin_pwd(envp));
+		exit_code = builtin_pwd(envp);
 	else if (!ft_strncmp(command.command[0], "export", 7))
-		return (builtin_export(command, envp));
+		exit_code = builtin_export(command, envp);
 	else if (!ft_strncmp(command.command[0], "unset", 6))
-		return (builtin_unset(command, envp));
+		exit_code = builtin_unset(command, envp);
 	else if (!ft_strncmp(command.command[0], "env", 4))
-		return (builtin_env(envp));
+		exit_code = builtin_env(envp);
 	else if (!ft_strncmp(command.command[0], "exit", 5))
-		exit(builtin_exit(envp));
-	return (EXIT_COMMAND_NOT_EXIST);
+		exit_code = EXIT_SUCCESS;
+	delete_command(command);
+	return (exit_code);
 }
 
 /// @brief searching executable file in PATH directories before execution.
@@ -86,7 +95,7 @@ void	execute_simple_command(t_command command, t_environment *envp)
 		}
 		errprint("command not found: %s\n", command.command[0]);
 		ft_strarr_clear(dirs); //TODO:needs to check if get_value allocates memory
-		ft_strarr_clear(command.command);
+		delete_command(command);
 		exit(EXIT_COMMAND_NOT_EXIST);
 	}
 }
@@ -123,10 +132,33 @@ void	execute_commands(
 		exit(EXIT_SUCCESS);
 }
 
+int	process_builtins(char **commands, t_environment *env)
+{
+	t_command	cmd;
+
+	cmd = parse_command(*commands);
+	if (ft_strncmp(cmd.command[0], "exit", 5) == 0)
+	{
+		delete_command(cmd);
+		builtin_exit(env);
+		return (TRUE);
+	}
+	else if (ft_strncmp(cmd.command[0], "export", 7) == 0
+		|| ft_strncmp(cmd.command[0], "unset", 6) == 0
+		|| ft_strncmp(cmd.command[0], "cd", 3) == 0)
+	{
+		env->exit_code = run_builtin(cmd, env);
+		delete_command(cmd);
+		return (TRUE);
+	}
+	delete_command(cmd);
+	return (FALSE);
+}
+
 /// @brief split the whole command into chanks by pipelines before execution
 /// @param input the string input through prompt
 /// @param envp TODO:should be replaced by get_value functions
-void	commands(char *input, t_environment *envp)
+void	commands(char *input, t_environment *env)
 {
 	char	**commands;
 	int		arrlen;
@@ -134,25 +166,15 @@ void	commands(char *input, t_environment *envp)
 
 	commands = ft_split(input, '|');
 	arrlen = ft_arrlen(commands);
-	if (arrlen == 1)
+	if ((arrlen == 1 && !process_builtins(commands, env)) || arrlen > 1)
 	{
-		// Check for whitespace?
-		if (ft_strncmp(*commands, "export", 6) == 0
-			|| ft_strncmp(*commands, "unset", 5) == 0
-			|| ft_strncmp(*commands, "cd", 2) == 0
-			|| ft_strncmp(*commands, "exit", 4) == 0)
-		{
-			run_builtin(parse_command(*commands), envp);
-			ft_strarr_clear(commands);
-			return ;
-		}
+		pid = fork();
+		if (pid == -1)
+			exit(EXIT_FAILURE);
+		if (pid == 0)
+			execute_commands(commands, NULL, arrlen - 1, env);
+		if (0 < pid)
+			waitpid(pid, &(env->exit_code), 0);
 	}
-	pid = fork();
-	if (pid == -1)
-		exit(EXIT_FAILURE);
-	if (pid == 0)
-		execute_commands(commands, NULL, arrlen - 1, envp);
-	if (0 < pid)
-		waitpid(pid, 0, 0);
 	ft_strarr_clear(commands);
 }
