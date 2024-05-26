@@ -6,11 +6,13 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/26 15:11:57 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/27 00:53:14 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+
+void	set_interactive(int is_interative);
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -21,10 +23,12 @@ int	main(int argc, char **argv, char **envp)
 	(void) argc;
 	(void) argv;
 	init_environment(&env, argv[0], envp);
-	init_signal_handler();
+	sig_echo_disable();
 	while (TRUE)
 	{
+		set_interactive(TRUE);
 		input = readline("\e[1;34m> \e[0m");
+		set_interactive(FALSE);
 		if (!input)
 			exit(EXIT_SUCCESS); //TODO:replaced by builtin exit function;
 		trimmed_input = ft_strtrim(input, " \t");

@@ -3,47 +3,49 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 10:47:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/22 11:38:24 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/27 00:58:37 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-void	handle_interpret(void)
+static void	signal_other(int signal)
 {
+	if (signal == SIGQUIT)
+		printf("Quit");
 	printf("\n");
 	rl_on_new_line();
-	rl_replace_line("", 0);
+}
+
+static void	signal_interactive(int signal)
+{
+	if (signal == SIGINT)
+	{
+		rl_replace_line("", 0);
+		printf("\n");
+	}
+	rl_on_new_line();
 	rl_redisplay();
 }
 
-void	handle_quit(void)
+void	set_interactive(int is_interative)
 {
-	struct sigaction	sa;
+	struct sigaction	interupt;
+	struct sigaction	quit;
 
-	sa.sa_handler = SIG_IGN;
-	sigaction(SIGQUIT, &sa, NULL);
-}
-
-void	signal_handler(int sig, siginfo_t *info, void *context)
-{
-	(void) info;
-	(void) context;
-	if (sig == SIGINT)
-		handle_interpret();
-	if (sig == SIGQUIT)
-		handle_quit();
-}
-
-void	init_signal_handler(void)
-{
-	struct sigaction	sa;
-
-	sa.sa_sigaction = signal_handler;
-	sa.sa_flags = SA_SIGINFO;
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
+	if (is_interative)
+	{
+		interupt.sa_handler = &signal_interactive;
+		quit.sa_handler = SIG_IGN;
+	}
+	else
+	{
+		interupt.sa_handler = &signal_other;
+		quit.sa_handler = &signal_other;
+	}
+	sigaction(SIGINT, &interupt, NULL);
+	sigaction(SIGQUIT, &quit, NULL);
 }

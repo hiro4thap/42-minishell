@@ -6,23 +6,11 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:37:06 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/25 11:30:45 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/27 01:02:57 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-static char	*get_file_from_path(char *path)
-{
-	char	*str;
-
-	if (!path)
-		return (NULL);
-	str = ft_strrchr(path, '/');
-	if (str && *(str + 1))
-		return (str + 1);
-	return (path);
-}
 
 static int	allocate(void **pointer, void *malloc_return)
 {
@@ -45,13 +33,12 @@ int	init_environment(t_environment **env, char *shell, char **shell_env)
 
 	if (allocate((void **) env, malloc(sizeof(t_environment))) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
+	init_terminal(*env, shell);
 	(*env)->size = ft_strarr_len(shell_env);
 	(*env)->max_size = (*env)->size + total_user_variables;
 	if (allocate((void **) &((*env)->envp),
 			ft_calloc((*env)->max_size + 1, sizeof(char *))) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
-	(*env)->shell = get_file_from_path(shell);
-	(*env)->exit_code = EXIT_SUCCESS;
 	index = 0;
 	while (index < (*env)->size)
 	{

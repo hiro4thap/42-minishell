@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/26 15:10:22 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/27 00:57:50 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ typedef struct s_environment
 	int			size;
 	int			max_size;
 	int			exit_code;
+	int			echoctl_was_enabled;
 }	t_environment;
 
 typedef struct s_command
@@ -90,6 +91,7 @@ typedef enum e_redirection
 	DOUBLE_OUT
 }	t_redirection;
 
+void	init_terminal(t_environment *env, char *shell);
 int			init_environment(t_environment **env,
 				char *shell, char **shell_env);
 const char	*get_key(t_environment *env, char *key);
@@ -103,7 +105,9 @@ void		validate_redirection(char *str);
 void		commands(char *input, t_environment *envp);
 void		dup_out_fds(int pipefd_p[2], t_command command);
 void		dup_in_fds(int pipefd_c[2], t_command command, int index);
-void		init_signal_handler(void);
+void		set_interactive(int is_interative);
+void		sig_echo_enable(void);
+void		sig_echo_disable(void);
 
 void		errprint(char *msg, char *fail);
 char		*trim_quote(char *token);
