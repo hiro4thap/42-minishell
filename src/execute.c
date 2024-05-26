@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/25 23:37:14 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/26 14:24:07 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,7 @@ void	commands(char *input, t_environment *env)
 	char	**commands;
 	int		arrlen;
 	int		pid;
+	int		status;
 
 	commands = ft_split(input, '|');
 	arrlen = ft_arrlen(commands);
@@ -173,7 +174,11 @@ void	commands(char *input, t_environment *env)
 		if (pid == 0)
 			execute_commands(commands, NULL, arrlen - 1, env);
 		if (0 < pid)
-			waitpid(pid, &(env->exit_code), 0);
+		{
+			waitpid(pid, &status, 0);
+			if (WIFEXITED(status))
+				env->exit_code = WEXITSTATUS(status);
+		}
 	}
 	ft_strarr_clear(commands);
 }
