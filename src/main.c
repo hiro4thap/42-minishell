@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/26 15:10:46 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/26 15:11:57 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	main(int argc, char **argv, char **envp)
 		{
 			add_history(input);
 			rl_on_new_line();
-			commands(trimmed_input, envp);
+			commands(trimmed_input, env);
 		}
 		free(input);
 		free(trimmed_input);
