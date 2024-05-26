@@ -6,27 +6,11 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/24 14:21:00 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/26 17:08:52 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-/// @brief TODO:remove after implementing get_env_var
-char	**get_envp_path(char **envp)
-{
-	char	*envp_path_str;
-	char	**envp_path;
-
-	while (*envp)
-	{
-		if (!ft_strncmp(*envp, "PATH=", 5))
-			envp_path_str = *envp + 5;
-		envp++;
-	}
-	envp_path = ft_split(envp_path_str, ':');
-	return (envp_path);
-}
 
 bool	is_builtin(t_command command)
 {
@@ -64,19 +48,19 @@ int	run_builtin(t_command command, t_environment *envp)
 /// @brief searching executable file in PATH directories before execution.
 /// If file is not found, a message will be displayed
 /// @param command t_command structure to be execute
-/// @param envp TODO:should be replaced by get_value functions
+/// @param envp environment variable
 void	execute_simple_command(t_command command, t_environment *envp)
 {
 	char	**dirs;
 	int		i;
 	char	*cmd;
 
-	char	*pwd = "/Users/hiono/Documents/minishell"; // TODO: should be deleted
+	char	*pwd = getcwd(NULL, 0);
 	dirs = NULL; //TODO: cleared by spliting functions
 	cmd = NULL; //TODO: cleared by spliting functions
 	if (command.command[0][0] == '.')
 	{
-		cmd = ft_strconcat(pwd, "/", command.command[0], NULL); // TODO: "pwd" should be replaced by the function to get current directory
+		cmd = ft_strconcat(pwd, "/", command.command[0], NULL);
 		execve(cmd, command.command, envp->envp);
 		free(cmd);
 	}
@@ -86,15 +70,16 @@ void	execute_simple_command(t_command command, t_environment *envp)
 		exit(run_builtin(command, envp));
 	else
 	{
-		dirs = get_envp_path(envp->envp); //TODO:get_value from env vars
-		if (!dirs || !*dirs) //TODO: what the function returns when it's empty
+		const char	*path = get_value(envp, "PATH");
+		if (!path || !*path)
 		{
-			cmd = ft_strconcat(pwd, "/", command.command[0], NULL); // TODO: "pwd" should be replaced by the function to get current directory
+			cmd = ft_strconcat(pwd, "/", command.command[0], NULL);
 			execve(cmd, command.command, envp->envp);
 			free(cmd);
 		}
 		else
 		{
+			dirs = ft_split(path, ':');
 			i = 0;
 			while (dirs[i])
 			{
@@ -103,10 +88,10 @@ void	execute_simple_command(t_command command, t_environment *envp)
 				free(cmd);
 				i++;
 			}
+			ft_strarr_clear(dirs);
 		}
 	}
 	errprint("command not found: %s\n", command.command[0]);
-	ft_strarr_clear(dirs); //TODO:needs to check if get_value allocates memory
 	ft_strarr_clear(command.command);
 	exit(EXIT_COMMAND_NOT_EXIST);
 }
