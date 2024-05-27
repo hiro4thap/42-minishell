@@ -6,27 +6,11 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/22 21:59:19 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/26 17:08:52 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-/// @brief TODO:remove after implementing get_env_var
-char	**get_envp_path(char **envp)
-{
-	char	*envp_path_str;
-	char	**envp_path;
-
-	while (*envp)
-	{
-		if (!ft_strncmp(*envp, "PATH=", 5))
-			envp_path_str = *envp + 5;
-		envp++;
-	}
-	envp_path = ft_split(envp_path_str, ':');
-	return (envp_path);
-}
 
 bool	is_builtin(t_command command)
 {
@@ -64,31 +48,52 @@ int	run_builtin(t_command command, t_environment *envp)
 /// @brief searching executable file in PATH directories before execution.
 /// If file is not found, a message will be displayed
 /// @param command t_command structure to be execute
-/// @param envp TODO:should be replaced by get_value functions
+/// @param envp environment variable
 void	execute_simple_command(t_command command, t_environment *envp)
 {
 	char	**dirs;
 	int		i;
 	char	*cmd;
 
-	if (is_builtin(command))
+	char	*pwd = getcwd(NULL, 0);
+	dirs = NULL; //TODO: cleared by spliting functions
+	cmd = NULL; //TODO: cleared by spliting functions
+	if (command.command[0][0] == '.')
+	{
+		cmd = ft_strconcat(pwd, "/", command.command[0], NULL);
+		execve(cmd, command.command, envp->envp);
+		free(cmd);
+	}
+	else if (command.command[0][0] == '/')
+		execve(command.command[0], command.command, envp->envp);
+	else if (is_builtin(command))
 		exit(run_builtin(command, envp));
 	else
 	{
-		dirs = get_envp_path(envp->envp); //TODO:get_value from env vars
-		i = 0;
-		while (dirs[i])
+		const char	*path = get_value(envp, "PATH");
+		if (!path || !*path)
 		{
-			cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
+			cmd = ft_strconcat(pwd, "/", command.command[0], NULL);
 			execve(cmd, command.command, envp->envp);
 			free(cmd);
-			i++;
 		}
-		errprint("command not found: %s\n", command.command[0]);
-		ft_strarr_clear(dirs); //TODO:needs to check if get_value allocates memory
-		ft_strarr_clear(command.command);
-		exit(EXIT_COMMAND_NOT_EXIST);
+		else
+		{
+			dirs = ft_split(path, ':');
+			i = 0;
+			while (dirs[i])
+			{
+				cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
+				execve(cmd, command.command, envp->envp);
+				free(cmd);
+				i++;
+			}
+			ft_strarr_clear(dirs);
+		}
 	}
+	errprint("command not found: %s\n", command.command[0]);
+	ft_strarr_clear(command.command);
+	exit(EXIT_COMMAND_NOT_EXIST);
 }
 
 /// @brief parent process handles file descripter and exectue simple command
@@ -112,7 +117,7 @@ void	execute_commands(
 		exit(EXIT_FAILURE);
 	if (0 < pid)
 	{
-		command = parse_command(commands[index]);
+		command = parse_command(commands[index], envp);
 		dup_in_fds(pipefd_c, command, index);
 		dup_out_fds(pipefd_p, command);
 		execute_simple_command(command, envp);
@@ -142,7 +147,7 @@ void	commands(char *input, t_environment *envp)
 			|| ft_strncmp(*commands, "cd", 2) == 0
 			|| ft_strncmp(*commands, "exit", 4) == 0)
 		{
-			run_builtin(parse_command(*commands), envp);
+			run_builtin(parse_command(*commands, envp), envp);
 			ft_strarr_clear(commands);
 			return ;
 		}

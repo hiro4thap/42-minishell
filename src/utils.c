@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:37:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/13 14:59:35 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/24 15:42:28 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,10 @@ char	*trim_quote(char *token)
 	len = ft_strlen(token);
 	res = token;
 	if (token[0] == '\'' && token[len - 1] == '\'')
-	{
 		res = ft_strtrim(token, "\'");
-		free(token);
-	}
 	else if (token[0] == '\"' && token[len - 1] == '\"')
-	{
 		res = ft_strtrim(token, "\"");
-		free(token);
-	}
-	return (res);
+	return (ft_strdup(res));
 }
 
 /// @brief display message with a file name or command
@@ -71,3 +65,29 @@ size_t	ft_arrlen(char **str_array)
 	}
 	return (len);
 }
+
+/// @brief handle token by expanding variable and trimming quotes
+/// @param token a token that needs to be expanded
+/// @param env environment variable
+/// @return expnaded and quotes-trimmed string
+char	*expand_variable(char *token, t_environment *env)
+{
+	bool		is_to_be_expanded;
+	char		*trimmed_token;
+	const char	*expanded_token;
+
+	is_to_be_expanded = 1;
+	if (token[0] == '\'' && token[ft_strlen(token) - 1] == '\'')
+		is_to_be_expanded = 0;
+	trimmed_token = trim_quote(token);
+	if (!is_to_be_expanded || trimmed_token[0] != '$')
+		return (trimmed_token);
+	if (!ft_strncmp(trimmed_token, "$?", 3))
+		return (ft_itoa(123)); //TODO: the int value should be retreaved from env structure
+	expanded_token = get_value(env, trimmed_token + 1);
+	free(trimmed_token);
+	if (!expanded_token)
+		return (ft_strdup(" "));
+	return (ft_strdup(expanded_token));
+}
+
