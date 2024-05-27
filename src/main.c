@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 12:10:39 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/27 17:03:32 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-void	set_interactive(int is_interative);
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -26,9 +24,9 @@ int	main(int argc, char **argv, char **envp)
 	sig_echo_disable();
 	while (TRUE)
 	{
-		set_interactive(TRUE);
+		set_interactive(TRUE, env);
 		input = readline("\e[1;34m> \e[0m");
-		set_interactive(FALSE);
+		set_interactive(FALSE, env);
 		if (!input)
 			builtin_exit(env);
 		trimmed_input = ft_strtrim(input, " \t");

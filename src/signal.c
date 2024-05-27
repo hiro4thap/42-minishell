@@ -3,20 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 10:47:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 00:58:37 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/27 17:23:30 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
+int	g_sig_num = 0;
+
 static void	signal_other(int signal)
 {
 	if (signal == SIGQUIT)
-		printf("Quit");
+		printf("Quit: %d", SIGQUIT);
 	printf("\n");
+	g_sig_num = signal;
 	rl_on_new_line();
 }
 
@@ -26,16 +29,25 @@ static void	signal_interactive(int signal)
 	{
 		rl_replace_line("", 0);
 		printf("\n");
+		g_sig_num = -SIGINT;
 	}
 	rl_on_new_line();
 	rl_redisplay();
 }
 
-void	set_interactive(int is_interative)
+void	set_interactive(int is_interative, t_environment *env)
 {
 	struct sigaction	interupt;
 	struct sigaction	quit;
 
+	if (g_sig_num)
+	{
+		if (g_sig_num > 0)
+			env->exit_code = 128 + g_sig_num;
+		else if (g_sig_num == -SIGINT)
+			env->exit_code = EXIT_FAILURE;
+		g_sig_num = 0;
+	}
 	if (is_interative)
 	{
 		interupt.sa_handler = &signal_interactive;
