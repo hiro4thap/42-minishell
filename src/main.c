@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 17:03:32 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/27 23:53:06 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	main(int argc, char **argv, char **envp)
 		input = readline("\e[1;34m> \e[0m");
 		set_interactive(FALSE, env);
 		if (!input)
-			builtin_exit(env);
+			builtin_exit(NULL, env);
 		trimmed_input = ft_strtrim(input, " \t");
 		if (!trimmed_input)
 		{

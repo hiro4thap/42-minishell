@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 13:30:45 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/27 23:54:41 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	run_builtin(t_command command, t_environment *envp)
 	else if (!ft_strncmp(command.command[0], "env", 4))
 		exit_code = builtin_env(envp);
 	else if (!ft_strncmp(command.command[0], "exit", 5))
-		exit_code = EXIT_SUCCESS;
+		exit_code = EXIT_SUCCESS; // This needs to be handled differently.
 	return (exit_code);
 }
 
@@ -143,8 +143,7 @@ int	process_builtins(char **commands, t_environment *env)
 	cmd = parse_command(*commands, env);
 	if (ft_strncmp(cmd.command[0], "exit", 5) == 0)
 	{
-		delete_command(cmd);
-		builtin_exit(env);
+		builtin_exit(&cmd, env);
 		return (TRUE);
 	}
 	else if (ft_strncmp(cmd.command[0], "export", 7) == 0

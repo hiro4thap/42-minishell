@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 17:01:38 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/27 23:28:18 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ int			is_anglebracket(char c);
 int			builtin_cd(t_command command, t_environment *env);
 int			builtin_echo(int argc, char **args, t_environment *env);
 int			builtin_env(t_environment *env);
-int			builtin_exit(t_environment *env);
+int			builtin_exit(t_command *command, t_environment *env);
 int			builtin_export(t_command command, t_environment *env);
 int			builtin_pwd(t_environment *env);
 int			builtin_unset(t_command command, t_environment *env);
