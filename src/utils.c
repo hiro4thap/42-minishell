@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:37:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/24 15:42:28 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/27 13:01:57 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ char	*expand_variable(char *token, t_environment *env)
 	if (!is_to_be_expanded || trimmed_token[0] != '$')
 		return (trimmed_token);
 	if (!ft_strncmp(trimmed_token, "$?", 3))
-		return (ft_itoa(123)); //TODO: the int value should be retreaved from env structure
+		return (ft_itoa(evn->exit_code));
 	expanded_token = get_value(env, trimmed_token + 1);
 	free(trimmed_token);
 	if (!expanded_token)
