@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 00:53:14 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/27 12:10:39 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	main(int argc, char **argv, char **envp)
 		input = readline("\e[1;34m> \e[0m");
 		set_interactive(FALSE);
 		if (!input)
-			exit(EXIT_SUCCESS); //TODO:replaced by builtin exit function;
+			builtin_exit(env);
 		trimmed_input = ft_strtrim(input, " \t");
 		if (!trimmed_input)
 		{
