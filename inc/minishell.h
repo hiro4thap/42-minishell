@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 23:28:18 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/28 19:58:34 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,9 @@ struct termios
 # include "../lib/libft/includes/libft.h"
 
 # define EXIT_COMMAND_NOT_EXIST 127
+# define EXIT_IMPROPER_BUILTIN_USAGE 2
 # define EXIT_NO_MEMORY 3
+
 
 /// @brief The minishell environment
 typedef struct s_environment

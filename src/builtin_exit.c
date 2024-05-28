@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:08:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/27 23:55:45 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/28 20:00:19 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,26 @@ static int	is_numeric(char *str)
 	return (TRUE);
 }
 
+static int	exit_args(int argc, t_command *command, t_environment *env,
+					int *exit_code)
+{
+	if (!is_numeric(command->command[1]))
+	{
+		ft_printf("%s: exit: %s: numeric argument required\n",
+			env->shell, command->command[1]);
+		*exit_code = EXIT_IMPROPER_BUILTIN_USAGE;
+	}
+	else if (argc > 2)
+	{
+		ft_printf("%s: exit: too many arguments\n", env->shell);
+		*exit_code = EXIT_FAILURE;
+		return (EXIT_FAILURE);
+	}
+	else
+		*exit_code = ft_atoi(command->command[1]) % 256;
+	return (EXIT_SUCCESS);
+}
+
 /// @brief Exits the shell with the exit code of that last foreground process.
 /// @param env The minishell environment.
 /// @return Exit status.
@@ -35,34 +55,21 @@ int	builtin_exit(t_command *command, t_environment *env)
 	int	argc;
 	int	exit_code;
 
-	ft_putendl_fd("exit", STDOUT_FILENO);
-	if (env->echoctl_was_enabled)
-		sig_echo_enable();
-	else
-		sig_echo_disable();
 	if (command)
 	{
 		argc = ft_strarr_len(command->command);
 		if (argc > 1)
 		{
-			if (!is_numeric(command->command[1]))
-			{
-				ft_printf("%s: exit: %s: numeric argument required\n",
-					env->shell, command->command[1]);
-				exit_code = 2;
-			}
-			else if (argc > 2)
-			{
-				ft_printf("%s: exit: too many arguments\n");
-				// Do I need to set env here?
-				return (EXIT_FAILURE);
-			}
-			else
-				exit_code = ft_atoi(command->command[1]) % 256;
+			if (exit_args(argc, command, env, &exit_code) == EXIT_FAILURE)
+				return (exit_code);
 		}
 		else
 			exit_code = env->exit_code;
 	}
+	if (env->echoctl_was_enabled)
+		sig_echo_enable();
+	else
+		sig_echo_disable();
 	ft_strarr_clear(env->envp);
 	ft_strarr_clear(command->command);
 	exit(exit_code);
