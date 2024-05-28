@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:08:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/28 21:30:57 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/29 08:54:52 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ int	builtin_exit(t_command *command, t_environment *env)
 	int	argc;
 	int	exit_code;
 
+	exit_code = env->exit_code;
 	if (command)
 	{
 		argc = ft_strarr_len(command->command);
