@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 13:30:45 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/28 15:26:09 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ void	commands(char *input, t_environment *env)
 	int		pid;
 	int		status;
 
-	commands = ft_split(input, '|');
+	commands = split_command(input);
 	arrlen = ft_arrlen(commands);
 	if ((arrlen == 1 && !process_builtins(commands, env)) || arrlen > 1)
 	{
