@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:07 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/28 20:19:36 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/28 21:05:22 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,11 @@
 /// @return 
 static int	error(t_environment *env, const char *path, const char *error)
 {
-	char	*message;
-
-	message = ft_strconcat((char *) env->shell, ": export: \'",
-			path, "\': ", error, NULL);
-	if (!message)
-	{
-		perror("minishell: export");
-		exit(EXIT_FAILURE);
-	}
-	ft_putendl_fd(message, STDERR_FILENO);
-	free(message);
+	ft_putstr_fd((char *) env->shell, STDERR_FILENO);
+	ft_putstr_fd(": export: \'", STDERR_FILENO);
+	ft_putstr_fd((char *) path, STDERR_FILENO);
+	ft_putstr_fd("\': ", STDERR_FILENO);
+	ft_putendl_fd((char *) error, STDERR_FILENO);
 	return (EXIT_FAILURE);
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 10:47:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 17:23:30 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/28 21:00:26 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,11 @@ int	g_sig_num = 0;
 static void	signal_other(int signal)
 {
 	if (signal == SIGQUIT)
-		printf("Quit: %d", SIGQUIT);
-	printf("\n");
+	{
+		ft_putstr_fd("Quit: ", STDOUT_FILENO);
+		ft_putnbr_fd(SIGQUIT, STDOUT_FILENO);
+	}
+	ft_putchar_fd('\n', STDOUT_FILENO);
 	g_sig_num = signal;
 	rl_on_new_line();
 }
@@ -28,7 +31,7 @@ static void	signal_interactive(int signal)
 	if (signal == SIGINT)
 	{
 		rl_replace_line("", 0);
-		printf("\n");
+		ft_putchar_fd('\n', STDOUT_FILENO);
 		g_sig_num = -SIGINT;
 	}
 	rl_on_new_line();
