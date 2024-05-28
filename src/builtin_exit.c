@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:08:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/28 20:00:19 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/28 21:30:57 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,16 @@ static int	exit_args(int argc, t_command *command, t_environment *env,
 {
 	if (!is_numeric(command->command[1]))
 	{
-		ft_printf("%s: exit: %s: numeric argument required\n",
-			env->shell, command->command[1]);
+		ft_putstr_fd((char *) env->shell, STDERR_FILENO);
+		ft_putstr_fd(": exit: ", STDERR_FILENO);
+		ft_putstr_fd(command->command[1], STDERR_FILENO);
+		ft_putendl_fd(": numeric argument required", STDERR_FILENO);
 		*exit_code = EXIT_IMPROPER_BUILTIN_USAGE;
 	}
 	else if (argc > 2)
 	{
-		ft_printf("%s: exit: too many arguments\n", env->shell);
+		ft_putstr_fd((char *) env->shell, STDERR_FILENO);
+		ft_putendl_fd(": exit: too many arguments", STDERR_FILENO);
 		*exit_code = EXIT_FAILURE;
 		return (EXIT_FAILURE);
 	}
@@ -71,7 +74,8 @@ int	builtin_exit(t_command *command, t_environment *env)
 	else
 		sig_echo_disable();
 	ft_strarr_clear(env->envp);
-	ft_strarr_clear(command->command);
+	if (command)
+		ft_strarr_clear(command->command);
 	exit(exit_code);
 	return (exit_code);
 }
