@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:07 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/25 11:53:13 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/28 20:19:36 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,19 @@ int	valid_identifier(char *str)
 	return (TRUE);
 }
 
+int	export_noargs(t_environment *env)
+{
+	int	index;
+
+	index = 0;
+	while (index < env->size)
+	{
+		ft_putstr_fd("declare -x ", STDOUT_FILENO);
+		ft_putendl_fd(env->envp[index++], STDOUT_FILENO);
+	}
+	return (EXIT_SUCCESS);
+}
+
 /// @brief Builtin: Adds/sets the value of a key/value pair in the form of
 /// ``key=value`` to the minishell environment
 /// @param env The minishell environment.
@@ -73,8 +86,9 @@ int	builtin_export(t_command command, t_environment *env)
 	char	*key;
 
 	exit_code = EXIT_SUCCESS;
-	cmd = command.command;
-	cmd++;
+	if (ft_strarr_len(command.command) == 1)
+		return (export_noargs(env));
+	cmd = &(command.command[1]);
 	while (*cmd)
 	{
 		index = ft_strfind(*cmd, "=");
