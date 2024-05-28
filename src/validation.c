@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 13:06:48 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/10 17:14:58 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/28 18:43:28 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,21 +50,25 @@ int	is_outredirection_end(char *input)
 
 /// @brief validate if the redirections are used in a allowed format
 /// @param input the string input into terminal
-void	validate_redirection(char *input)
+bool	is_valid_redirection(char *input)
 {
 	if (!is_redirection_one(input))
 	{
-		perror("each redirection should not be used more than once \n");
-		exit(EXIT_FAILURE);
+		ft_putstr_fd("each redirection should not be used more than once \n",
+			STDERR_FILENO);
+		return (FALSE);
 	}
 	else if (!is_inredirection_start(input))
 	{
-		perror("< or << should be placed before the first pipeline\n");
-		exit(EXIT_FAILURE);
+		ft_putstr_fd("< or << should be placed before the first pipeline\n",
+			STDERR_FILENO);
+		return (FALSE);
 	}
 	else if (!is_outredirection_end(input))
 	{
-		perror("> or >> should be placed after the last pipeline\n");
-		exit(EXIT_FAILURE);
+		ft_putstr_fd("> or >> should be placed after the last pipeline\n",
+			STDERR_FILENO);
+		return (FALSE);
 	}
+	return (TRUE);
 }
