@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 14:15:41 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/28 17:42:09 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	execute_simple_command(t_command command, t_environment *envp)
 			ft_strarr_clear(dirs);
 		}
 	}
-	errprint("command not found: %s\n", command.command[0]);
+	errprint("%s: command not found\n", command.command[0], envp);
 	ft_strarr_clear(command.command);
 	exit(EXIT_COMMAND_NOT_EXIST);
 }
@@ -126,8 +126,8 @@ void	execute_commands(
 	if (0 < pid)
 	{
 		command = parse_command(commands[index], envp);
-		dup_in_fds(pipefd_c, command, index);
-		dup_out_fds(pipefd_p, command);
+		dup_in_fds(pipefd_c, command, index, envp);
+		dup_out_fds(pipefd_p, command, envp);
 		execute_simple_command(command, envp);
 	}
 	else if (pid == 0 && 0 < index)

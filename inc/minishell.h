@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 14:21:55 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/28 17:46:12 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,13 +103,14 @@ const char	*get_value(t_environment *env, char *key);
 t_command	parse_command(char *cmd, t_environment *env);
 void		validate_redirection(char *str);
 void		commands(char *input, t_environment *envp);
-void		dup_out_fds(int pipefd_p[2], t_command command);
-void		dup_in_fds(int pipefd_c[2], t_command command, int index);
+void		dup_out_fds(int pipefd_p[2], t_command command, t_environment *env);
+void		dup_in_fds(int pipefd_c[2], t_command command, int index,
+			t_environment *env);
 void		set_interactive(int is_interative);
 void		sig_echo_enable(void);
 void		sig_echo_disable(void);
 
-void		errprint(char *msg, char *fail);
+void		errprint(char *msg, char *fail, t_environment *env);
 char		*trim_quote(char *token);
 char		*point_next_chank(char *token);
 char		*get_current_chank(char *token);

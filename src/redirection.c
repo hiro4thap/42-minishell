@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/13 15:00:14 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/28 17:44:40 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ void	heredoc_in(int pipefd_c[2], t_command command)
 /// The command will take input from the pipe
 /// @param command t_command structure to be execute
 /// @param index 
-void	dup_in_fds(int pipefd_c[2], t_command command, int index)
+void	dup_in_fds(int pipefd_c[2], t_command command, int index,
+		t_environment *env)
 {
 	int		in_fd;
 
@@ -61,12 +62,12 @@ void	dup_in_fds(int pipefd_c[2], t_command command, int index)
 	{
 		if (access(command.in_file, F_OK))
 		{
-			errprint("no such file or directory: %s\n", command.in_file);
+			errprint("%s: No such file or directory\n", command.in_file, env);
 			exit(EXIT_FAILURE);
 		}
 		else if (access(command.in_file, R_OK))
 		{
-			errprint("permission denied: %s\n", command.in_file);
+			errprint("%s: Permission denied\n", command.in_file, env);
 			exit(EXIT_FAILURE);
 		}
 		in_fd = open(command.in_file, O_RDONLY);
@@ -85,7 +86,7 @@ void	dup_in_fds(int pipefd_c[2], t_command command, int index)
 /// @param pipefd_p pipe passed from parent process.
 /// The command will pass the result to the pipe
 /// @param command t_command structure to be execute
-void	dup_out_fds(int pipefd_p[2], t_command command)
+void	dup_out_fds(int pipefd_p[2], t_command command, t_environment *env)
 {
 	int		out_fd;
 
@@ -99,7 +100,7 @@ void	dup_out_fds(int pipefd_p[2], t_command command)
 		return ;
 	if (!access(command.out_file, F_OK) && access(command.out_file, W_OK))
 	{
-		errprint("permission denied: %s\n", command.out_file);
+		errprint("%s: Permission denied\n", command.out_file, env);
 		exit(EXIT_FAILURE);
 	}
 	out_fd = STDOUT_FILENO;

@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:37:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 14:15:49 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/28 17:40:48 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,10 @@ char	*trim_quote(char *token)
 /// @brief display message with a file name or command
 /// @param format message including "%s" specifier which is replaced by "fail"
 /// @param fail name of file or command you want to display
-void	errprint(char *format, char *fail)
+void	errprint(char *format, char *fail, t_environment *env)
 {
+	ft_putstr_fd((char *) env->shell, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
 	while (*format)
 	{
 		while (*format && *format != '%')
