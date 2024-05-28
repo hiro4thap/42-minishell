@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:37:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 13:32:02 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/28 14:15:49 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,45 +49,3 @@ void	errprint(char *format, char *fail)
 		}
 	}
 }
-
-/// @brief count the lenght of a string array (NULL is not included)
-/// @param str_array the array you want to know the length of
-/// @return the length of a string array
-size_t	ft_arrlen(char **str_array)
-{
-	size_t	len;
-
-	len = 0;
-	while (*str_array)
-	{
-		len += 1;
-		str_array++;
-	}
-	return (len);
-}
-
-/// @brief handle token by expanding variable and trimming quotes
-/// @param token a token that needs to be expanded
-/// @param env environment variable
-/// @return expnaded and quotes-trimmed string
-char	*expand_variable(char *token, t_environment *env)
-{
-	bool		is_to_be_expanded;
-	char		*trimmed_token;
-	const char	*expanded_token;
-
-	is_to_be_expanded = 1;
-	if (token[0] == '\'' && token[ft_strlen(token) - 1] == '\'')
-		is_to_be_expanded = 0;
-	trimmed_token = trim_quote(token);
-	if (!is_to_be_expanded || trimmed_token[0] != '$')
-		return (trimmed_token);
-	if (!ft_strncmp(trimmed_token, "$?", 3))
-		return (ft_itoa(env->exit_code));
-	expanded_token = get_value(env, trimmed_token + 1);
-	free(trimmed_token);
-	if (!expanded_token)
-		return (ft_strdup(" "));
-	return (ft_strdup(expanded_token));
-}
-

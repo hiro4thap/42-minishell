@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 13:30:45 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/28 14:15:41 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ void	commands(char *input, t_environment *env)
 	int		status;
 
 	commands = ft_split(input, '|');
-	arrlen = ft_arrlen(commands);
+	arrlen = ft_strarr_len(commands);
 	if ((arrlen == 1 && !process_builtins(commands, env)) || arrlen > 1)
 	{
 		pid = fork();

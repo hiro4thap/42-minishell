@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/27 12:30:52 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/28 14:21:55 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,8 +111,9 @@ void		sig_echo_disable(void);
 
 void		errprint(char *msg, char *fail);
 char		*trim_quote(char *token);
-size_t		ft_arrlen(char **str_array);
-char		*expand_variable(char *token, t_environment *env);
+char		*point_next_chank(char *token);
+char		*get_current_chank(char *token);
+char		*expand_variables(char *token, t_environment *env);
 int			is_quote(char c);
 int			is_spacetab(char c);
 int			is_anglebracket(char c);

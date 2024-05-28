@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 16:11:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/24 15:42:43 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/28 14:24:38 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ t_command	parse_command(char *simple_command, t_environment *env)
 			simple_command = point_next_token(simple_command);
 		}
 		else
-			command.command[i++] = expand_variable(token, env);
+			command.command[i++] = expand_variables(token, env);
 		free(token);
 		simple_command = point_next_token(simple_command);
 	}
