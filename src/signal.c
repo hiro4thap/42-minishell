@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 10:47:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 21:00:26 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/28 21:47:30 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,18 @@ static void	signal_other(int signal)
 	}
 	ft_putchar_fd('\n', STDOUT_FILENO);
 	g_sig_num = signal;
-	rl_on_new_line();
 }
 
 static void	signal_interactive(int signal)
 {
 	if (signal == SIGINT)
 	{
-		rl_replace_line("", 0);
 		ft_putchar_fd('\n', STDOUT_FILENO);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
 		g_sig_num = -SIGINT;
 	}
-	rl_on_new_line();
-	rl_redisplay();
 }
 
 void	set_interactive(int is_interative, t_environment *env)
