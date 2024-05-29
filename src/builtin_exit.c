@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:08:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/29 08:54:52 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/29 11:06:34 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static int	exit_args(int argc, t_command *command, t_environment *env,
 		ft_putstr_fd(": exit: ", STDERR_FILENO);
 		ft_putstr_fd(command->command[1], STDERR_FILENO);
 		ft_putendl_fd(": numeric argument required", STDERR_FILENO);
-		*exit_code = EXIT_IMPROPER_BUILTIN_USAGE;
+		*exit_code = EXIT_OUT_OF_RANGE;
 	}
 	else if (argc > 2)
 	{
