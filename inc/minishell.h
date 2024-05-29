@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 19:58:34 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/29 11:05:38 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ struct termios
 # define EXIT_COMMAND_NOT_EXIST 127
 # define EXIT_IMPROPER_BUILTIN_USAGE 2
 # define EXIT_NO_MEMORY 3
+# define EXIT_OUT_OF_RANGE 255
 
 
 /// @brief The minishell environment
