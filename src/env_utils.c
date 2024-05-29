@@ -3,77 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:37:06 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/27 01:02:57 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/29 13:38:16 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-static int	allocate(void **pointer, void *malloc_return)
-{
-	*pointer = malloc_return;
-	if (*pointer)
-		return (EXIT_SUCCESS);
-	else
-		return (EXIT_FAILURE);
-}
-
-/// @brief Initialises environment from the calling shells environment.
-/// @param[out] env Environment pointer to be initialised. 
-/// @param[in] shell Name of shell from main arguments.
-/// @param[in] shell_env Environment from calling process.
-/// @return Exit code: 0 on success, 1 otherwise.
-int	init_environment(t_environment **env, char *shell, char **shell_env)
-{
-	const int	total_user_variables = 15;
-	int			index;
-
-	if (allocate((void **) env, malloc(sizeof(t_environment))) == EXIT_FAILURE)
-		return (EXIT_FAILURE);
-	init_terminal(*env, shell);
-	(*env)->size = ft_strarr_len(shell_env);
-	(*env)->max_size = (*env)->size + total_user_variables;
-	if (allocate((void **) &((*env)->envp),
-			ft_calloc((*env)->max_size + 1, sizeof(char *))) == EXIT_FAILURE)
-		return (EXIT_FAILURE);
-	index = 0;
-	while (index < (*env)->size)
-	{
-		if (allocate((void **) &(*env)->envp[index],
-				ft_strdup(shell_env[index])) == EXIT_FAILURE)
-		{
-			ft_strarr_clear((*env)->envp);
-			return (EXIT_FAILURE);
-		}
-		index++;
-	}
-	(*env)->envp[index] = NULL;
-	return (EXIT_SUCCESS);
-}
-
-/// @brief Searches the minishell environment for the specified key.
-/// @param env The minishell environment.
-/// @param key The key being searched for.
-/// @return Pointer to key/value pair, or NULL if not found. 
-const char	*get_key(t_environment *env, char *key)
-{
-	int	index;
-
-	index = 0;
-	while (index < env->size)
-	{
-		if (ft_strncmp(env->envp[index], key, ft_strlen(key)) == 0
-			&& ft_strchr(env->envp[index], '=') == env->envp[index]
-			+ ft_strlen(key))
-			return (env->envp[index]);
-		else
-			index++;
-	}
-	return (NULL);
-}
 
 /// @brief Searches the minishell environment for the specified key.
 /// @param env The minishell environment.
@@ -170,7 +107,6 @@ int	remove_var(t_environment *env, char *key)
 			while (index < env->size)
 			{
 				env->envp[index] = env->envp[index + 1];
-				// Make sure that this works at full array.
 				index++;
 			}
 			env->envp[index] = NULL;

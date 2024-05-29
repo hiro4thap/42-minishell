@@ -3,28 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   terminal.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 01:01:24 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/27 01:02:02 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/29 13:43:00 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-static char	*get_file_from_path(char *path)
-{
-	char	*str;
-
-	if (!path)
-		return (NULL);
-	str = ft_strrchr(path, '/');
-	if (str && *(str + 1))
-		return (str + 1);
-	return (path);
-}
-
-static int	sig_echo_get_status(void)
+int	sig_echo_get_status(void)
 {
 	struct termios	state;
 
@@ -32,13 +20,6 @@ static int	sig_echo_get_status(void)
 	if ((state.c_lflag & ECHOCTL) == ECHOCTL)
 		return (1);
 	return (0);
-}
-
-void	init_terminal(t_environment *env, char *shell)
-{
-	env->shell = get_file_from_path(shell);
-	env->exit_code = EXIT_SUCCESS;
-	env->echoctl_was_enabled = sig_echo_get_status();
 }
 
 void	sig_echo_disable(void)

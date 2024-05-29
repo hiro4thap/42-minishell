@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 13:06:48 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 18:43:28 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/29 13:22:48 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	is_outredirection_end(char *input)
 
 /// @brief validate if the redirections are used in a allowed format
 /// @param input the string input into terminal
-bool	is_valid_redirection(char *input)
+int	is_valid_redirection(char *input)
 {
 	if (!is_redirection_one(input))
 	{
