@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 13:09:35 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/29 13:13:50 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,26 +30,26 @@ bool	is_builtin(t_command command)
 	return (FALSE);
 }
 
-int	run_builtin(t_command command, t_environment *envp)
+int	run_builtin(t_command command, t_environment *env)
 {
 	int	exit_code;
 
 	exit_code = EXIT_COMMAND_NOT_EXIST;
 	if (!ft_strncmp(command.command[0], "echo", 5))
 		exit_code = builtin_echo(ft_strarr_len(command.command),
-				command.command, envp);
+				command.command, env);
 	else if (!ft_strncmp(command.command[0], "cd", 3))
-		exit_code = builtin_cd(command, envp);
+		exit_code = builtin_cd(command, env);
 	else if (!ft_strncmp(command.command[0], "pwd", 4))
-		exit_code = builtin_pwd(envp);
+		exit_code = builtin_pwd(env);
 	else if (!ft_strncmp(command.command[0], "export", 7))
-		exit_code = builtin_export(command, envp);
+		exit_code = builtin_export(command, env);
 	else if (!ft_strncmp(command.command[0], "unset", 6))
-		exit_code = builtin_unset(command, envp);
+		exit_code = builtin_unset(command, env);
 	else if (!ft_strncmp(command.command[0], "env", 4))
-		exit_code = builtin_env(envp);
+		exit_code = builtin_env(env);
 	else if (!ft_strncmp(command.command[0], "exit", 5))
-		exit_code = EXIT_SUCCESS;
+		exit_code = builtin_exit(&command, env);
 	return (exit_code);
 }
 
@@ -144,8 +144,9 @@ int	process_builtins(char **commands, t_environment *env)
 	cmd = parse_command(*commands, env);
 	if (ft_strncmp(cmd.command[0], "exit", 5) == 0)
 	{
+		ft_putendl_fd("exit", STDERR_FILENO);
+		env->exit_code = builtin_exit(&cmd, env);
 		delete_command(cmd);
-		builtin_exit(env);
 		return (TRUE);
 	}
 	else if (ft_strncmp(cmd.command[0], "export", 7) == 0

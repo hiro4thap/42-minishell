@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 18:41:22 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/29 13:14:06 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-void	set_interactive(int is_interative);
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -23,14 +21,15 @@ int	main(int argc, char **argv, char **envp)
 	(void) argc;
 	(void) argv;
 	init_environment(&env, argv[0], envp);
+	using_history();
 	sig_echo_disable();
 	while (TRUE)
 	{
-		set_interactive(TRUE);
-		input = readline("\e[1;34m> \e[0m");
-		set_interactive(FALSE);
+		set_interactive(TRUE, env);
+		input = readline("\001\e[1;34m\002> \001\e[0m\002");
+		set_interactive(FALSE, env);
 		if (!input)
-			builtin_exit(env);
+			builtin_exit(NULL, env);
 		trimmed_input = ft_strtrim(input, " \t");
 		if (!trimmed_input)
 		{
@@ -46,8 +45,8 @@ int	main(int argc, char **argv, char **envp)
 		if (*trimmed_input)
 		{
 			add_history(input);
-			rl_on_new_line();
 			commands(trimmed_input, env);
+			rl_on_new_line();
 		}
 		free(input);
 		free(trimmed_input);

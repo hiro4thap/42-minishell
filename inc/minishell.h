@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 13:08:57 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/29 13:13:21 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,10 @@ struct termios
 # include "../lib/libft/includes/libft.h"
 
 # define EXIT_COMMAND_NOT_EXIST 127
+# define EXIT_IMPROPER_BUILTIN_USAGE 2
 # define EXIT_NO_MEMORY 3
+# define EXIT_OUT_OF_RANGE 255
+
 
 /// @brief The minishell environment
 typedef struct s_environment
@@ -107,7 +110,7 @@ char		**split_command(char *command);
 void		dup_out_fds(int pipefd_p[2], t_command command, t_environment *env);
 void		dup_in_fds(int pipefd_c[2], t_command command, int index,
 			t_environment *env);
-void		set_interactive(int is_interative);
+void		set_interactive(int is_interative, t_environment *env);
 void		sig_echo_enable(void);
 void		sig_echo_disable(void);
 
@@ -123,7 +126,7 @@ int			is_anglebracket(char c);
 int			builtin_cd(t_command command, t_environment *env);
 int			builtin_echo(int argc, char **args, t_environment *env);
 int			builtin_env(t_environment *env);
-int			builtin_exit(t_environment *env);
+int			builtin_exit(t_command *command, t_environment *env);
 int			builtin_export(t_command command, t_environment *env);
 int			builtin_pwd(t_environment *env);
 int			builtin_unset(t_command command, t_environment *env);
