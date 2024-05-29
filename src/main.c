@@ -6,16 +6,41 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 13:14:06 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/29 13:47:36 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
+int	handle_input(char *input, t_environment *env)
+{
+	char	*trimmed_input;
+
+	trimmed_input = ft_strtrim(input, " \t");
+	if (!trimmed_input)
+	{
+		ft_putstr_fd("fail to malloc\n", STDERR_FILENO);
+		free(input);
+		return (0);
+	}
+	if (!is_valid_redirection(trimmed_input))
+	{
+		free(input);
+		return (0);
+	}
+	if (*trimmed_input)
+	{
+		add_history(input);
+		commands(trimmed_input, env);
+		rl_on_new_line();
+	}
+	free(trimmed_input);
+	return (1);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char			*input;
-	char			*trimmed_input;
 	t_environment	*env;
 
 	(void) argc;
@@ -30,26 +55,9 @@ int	main(int argc, char **argv, char **envp)
 		set_interactive(FALSE, env);
 		if (!input)
 			builtin_exit(NULL, env);
-		trimmed_input = ft_strtrim(input, " \t");
-		if (!trimmed_input)
-		{
-			ft_putstr_fd("fail to malloc\n", STDERR_FILENO);
-			free(input);
+		if (!handle_input(input, env))
 			continue ;
-		}
-		if (!is_valid_redirection(trimmed_input))
-		{
-			free(input);
-			continue ;
-		}
-		if (*trimmed_input)
-		{
-			add_history(input);
-			commands(trimmed_input, env);
-			rl_on_new_line();
-		}
 		free(input);
-		free(trimmed_input);
 	}
 	return (EXIT_SUCCESS);
 }

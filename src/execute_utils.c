@@ -6,7 +6,7 @@
 /*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/28 15:13:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 16:32:33 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/29 13:48:38 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 char	*point_next_simple_command(char *command)
 {
-	while(*command)
+	while (*command)
 	{
 		if (*command == '|')
 		{
@@ -77,4 +77,3 @@ char	**split_command(char *command)
 	simple_commands[i] = NULL;
 	return (simple_commands);
 }
-
