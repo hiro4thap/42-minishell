@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:08:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/29 11:06:34 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/29 14:16:08 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,14 @@ int	builtin_exit(t_command *command, t_environment *env)
 	if (command)
 	{
 		argc = ft_strarr_len(command->command);
-		if (argc > 1)
-		{
-			if (exit_args(argc, command, env, &exit_code) == EXIT_FAILURE)
-				return (exit_code);
-		}
+		if (argc > 1
+			&& (exit_args(argc, command, env, &exit_code) == EXIT_FAILURE))
+			return (exit_code);
 		else
 			exit_code = env->exit_code;
 	}
+	else
+		ft_putendl_fd("exit", STDERR_FILENO);
 	if (env->echoctl_was_enabled)
 		sig_echo_enable();
 	else
