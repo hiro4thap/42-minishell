@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 15:26:09 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/29 13:09:35 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,53 +53,54 @@ int	run_builtin(t_command command, t_environment *envp)
 	return (exit_code);
 }
 
+void	run_file(t_command command, t_environment *envp)
+{
+	char	*path;
+	char	**dirs;
+	char	*cmd;
+	int		i;
+
+	if (get_value(envp, "PATH"))
+		path = ft_strdup(get_value(envp, "PATH"));
+	else
+		path = getcwd(NULL, 0);
+	dirs = ft_split(path, ':');
+	i = 0;
+	while (dirs[i])
+	{
+		cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
+		execve(cmd, command.command, envp->envp);
+		free(cmd);
+		i++;
+	}
+	free(path);
+	ft_strarr_clear(dirs);
+}
+
 /// @brief searching executable file in PATH directories before execution.
 /// If file is not found, a message will be displayed
 /// @param command t_command structure to be execute
 /// @param envp environment variable
 void	execute_simple_command(t_command command, t_environment *envp)
 {
-	char	**dirs;
-	int		i;
 	char	*cmd;
+	char	*pwd;
 
-	char	*pwd = getcwd(NULL, 0);
-	dirs = NULL; //TODO: cleared by spliting functions
-	cmd = NULL; //TODO: cleared by spliting functions
 	if (command.command[0][0] == '.')
 	{
+		pwd = getcwd(NULL, 0);
 		cmd = ft_strconcat(pwd, "/", command.command[0], NULL);
 		execve(cmd, command.command, envp->envp);
 		free(cmd);
+		free(pwd);
 	}
 	else if (command.command[0][0] == '/')
 		execve(command.command[0], command.command, envp->envp);
 	else if (is_builtin(command))
 		exit(run_builtin(command, envp));
 	else
-	{
-		const char	*path = get_value(envp, "PATH");
-		if (!path || !*path)
-		{
-			cmd = ft_strconcat(pwd, "/", command.command[0], NULL);
-			execve(cmd, command.command, envp->envp);
-			free(cmd);
-		}
-		else
-		{
-			dirs = ft_split(path, ':');
-			i = 0;
-			while (dirs[i])
-			{
-				cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
-				execve(cmd, command.command, envp->envp);
-				free(cmd);
-				i++;
-			}
-			ft_strarr_clear(dirs);
-		}
-	}
-	errprint("command not found: %s\n", command.command[0]);
+		run_file(command, envp);
+	errprint("%s: command not found\n", command.command[0], envp);
 	ft_strarr_clear(command.command);
 	exit(EXIT_COMMAND_NOT_EXIST);
 }
@@ -126,8 +127,8 @@ void	execute_commands(
 	if (0 < pid)
 	{
 		command = parse_command(commands[index], envp);
-		dup_in_fds(pipefd_c, command, index);
-		dup_out_fds(pipefd_p, command);
+		dup_in_fds(pipefd_c, command, index, envp);
+		dup_out_fds(pipefd_p, command, envp);
 		execute_simple_command(command, envp);
 	}
 	else if (pid == 0 && 0 < index)
@@ -170,7 +171,7 @@ void	commands(char *input, t_environment *env)
 	int		status;
 
 	commands = split_command(input);
-	arrlen = ft_arrlen(commands);
+	arrlen = ft_strarr_len(commands);
 	if ((arrlen == 1 && !process_builtins(commands, env)) || arrlen > 1)
 	{
 		pid = fork();
