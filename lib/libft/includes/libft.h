@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 16:17:23 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/16 17:37:26 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/30 18:03:29 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ char	*ft_striteri(char *s, void (*f)(unsigned int, char *));
 void	ft_strarr_clear(char **str_array);
 size_t	ft_strarr_len(char **str_array);
 char	**ft_strarr_resize(char **arr, int size);
+char	*ft_strchrout(const char *str, const char *out, char c);
 
 // Type Functions
 

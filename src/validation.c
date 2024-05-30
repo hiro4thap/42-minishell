@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 13:06:48 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 13:22:48 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/05/30 18:51:46 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,59 +15,97 @@
 /// @brief validate if the input contains no more than one 
 /// inward or outward redirection
 /// @param input the string input into terminal
-/// @return 1: true / 0:false
+/// @return TRUE / FALSE
 int	is_redirection_one(char *input)
 {
-	if (1 < ft_strrchr(input, '<') - ft_strchr(input, '<')
-		|| 1 < ft_strrchr(input, '>') - ft_strchr(input, '>'))
-		return (0);
-	return (1);
+	char	*ptr_in;
+	char	*ptr_out;
+
+	ptr_in = ft_strchrout(input, "\"\'", '<');
+	if (ptr_in && ft_strchrout(ptr_in + 2, "\"\'", '<'))
+		return (FALSE);
+	ptr_out = ft_strchrout(input, "\"\'", '>');
+	if (ptr_out && ft_strchrout(ptr_out + 2, "\"\'", '>'))
+		return (FALSE);
+	return (TRUE);
 }
 
 /// @brief validate if the inward redirection exists at the first simple command
 /// @param input the string input into terminal
-/// @return 1: true / 0:false
+/// @return TRUE / FALSE
 int	is_inredirection_start(char *input)
 {
-	if (!ft_strchr(input, '<')
-		|| !ft_strchr(input, '|')
-		|| ft_strchr(input, '<') < ft_strchr(input, '|'))
-		return (1);
-	return (0);
+	if (!ft_strchrout(input, "\"\'", '<')
+		|| !ft_strchrout(input, "\"\'", '|')
+		|| ft_strchrout(input, "\"\'", '<') < ft_strchrout(input, "\"\'", '|'))
+		return (TRUE);
+	return (FALSE);
 }
 
 /// @brief validate if the outward redirection exists at the last simple command
 /// @param input the string input into terminal
-/// @return 1: true / 0:false
+/// @return TRUE / FALSE
 int	is_outredirection_end(char *input)
 {
-	if (!ft_strchr(input, '>')
-		|| !ft_strchr(input, '|')
-		|| ft_strchr(input, '|') < ft_strchr(input, '>'))
-		return (1);
-	return (0);
+	if (!ft_strchrout(input, "\"\'", '>')
+		|| !ft_strchrout(input, "\"\'", '|')
+		|| ft_strchrout(input, "\"\'", '|') < ft_strchrout(input, "\"\'", '>'))
+		return (TRUE);
+	return (FALSE);
+}
+
+int	has_redirection_filename(char *input)
+{
+	char	*ptr_in;
+	char	*ptr_out;
+
+	ptr_in = ft_strchrout(input, "\"\'", '<');
+	while (ptr_in && *ptr_in && !is_spacetab(*ptr_in))
+	{
+		ptr_in++;
+		if (*ptr_in == '|')
+			return (FALSE); //unexpected token `|
+		else if (!*ptr_in)
+			return (FALSE); //unexpected token `newline'
+	}
+	ptr_out = ft_strchrout(input, "\"\'", '>');
+	while (ptr_out && *ptr_out && !is_spacetab(*ptr_out))
+	{
+		ptr_out++;
+		if (*ptr_out == '|')
+			return (FALSE); //unexpected token `|
+		else if (!*ptr_out)
+			return (FALSE); //unexpected token `newline'
+	}
+	return (TRUE);
 }
 
 /// @brief validate if the redirections are used in a allowed format
 /// @param input the string input into terminal
-int	is_valid_redirection(char *input)
+/// @return TRUE / FALSE
+int	is_valid_redirection(char *input, t_environment *env)
 {
 	if (!is_redirection_one(input))
 	{
-		ft_putstr_fd("each redirection should not be used more than once \n",
-			STDERR_FILENO);
+		errprint("each redirection should not be used more than once \n",
+			NULL, env);
 		return (FALSE);
 	}
 	else if (!is_inredirection_start(input))
 	{
-		ft_putstr_fd("< or << should be placed before the first pipeline\n",
-			STDERR_FILENO);
+		errprint("< or << should be placed before the first pipeline\n",
+			NULL, env);
 		return (FALSE);
 	}
 	else if (!is_outredirection_end(input))
 	{
-		ft_putstr_fd("> or >> should be placed after the last pipeline\n",
-			STDERR_FILENO);
+		errprint("> or >> should be placed after the last pipeline\n",
+			NULL, env);
+		return (FALSE);
+	}
+	else if (!has_redirection_filename(input))
+	{
+		errprint("syntax error near unexpected token\n", NULL, env);
 		return (FALSE);
 	}
 	return (TRUE);

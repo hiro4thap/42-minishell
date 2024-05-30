@@ -6,7 +6,7 @@
 #    By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/19 17:27:27 by jhughes           #+#    #+#              #
-#    Updated: 2024/05/24 18:13:14 by jhughes          ###   ########.fr        #
+#    Updated: 2024/05/30 18:02:45 by hiono            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ C_STR		= ft_strlen.c ft_strlcpy.c ft_strlcat.c ft_strconcat.c \
 				ft_strchr.c ft_strrchr.c ft_strnstr.c ft_strncmp.c ft_strfind.c \
 				ft_substr.c ft_strjoin.c ft_strtrim.c ft_split.c ft_split_ws.c\
 				ft_strmapi.c ft_striteri.c ft_strdup.c \
-				ft_strarr_len.c ft_strarr_clear.c ft_strarr_resize.c
+				ft_strarr_len.c ft_strarr_clear.c ft_strarr_resize.c ft_strchrout.c
 C_TYPE		= ft_atoi.c ft_itoa.c ft_toupper.c ft_tolower.c \
 				ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c ft_isprint.c \
 				ft_isspace.c ft_isxdigit.c

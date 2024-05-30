@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 13:51:53 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/30 18:42:41 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ int			remove_var(t_environment *env, char *key);
 const char	*get_value(t_environment *env, char *key);
 
 t_command	parse_command(char *cmd, t_environment *env);
-int			is_valid_redirection(char *str);
+int			is_valid_redirection(char *input, t_environment *env);
 void		commands(char *input, t_environment *envp);
 char		**split_command(char *command);
 void		dup_out_fds(int pipefd_p[2], t_command command, t_environment *env);
