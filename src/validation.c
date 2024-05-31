@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 13:06:48 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/31 18:48:49 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/31 18:54:57 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	has_redirection_filename(char *input)
 		while (*ptr_file && is_spacetab(*ptr_file))
 			ptr_file++;
 		if (!ft_isalnum(*ptr_file) && *ptr_file != '[' && *ptr_file != ']'
-			&& *ptr_file != '!' && *ptr_file != '?')
+			&& *ptr_file != '!' && *ptr_file != '?' && *ptr_file != '$')
 			return (FALSE);
 	}
 	if (ft_strchrout(input, "\"\'", '>'))
@@ -77,7 +77,7 @@ int	has_redirection_filename(char *input)
 		while (*ptr_file && is_spacetab(*ptr_file))
 			ptr_file++;
 		if (!ft_isalnum(*ptr_file) && *ptr_file != '[' && *ptr_file != ']'
-			&& *ptr_file != '!' && *ptr_file != '?')
+			&& *ptr_file != '!' && *ptr_file != '?' && *ptr_file != '$')
 			return (FALSE);
 	}
 	return (TRUE);
