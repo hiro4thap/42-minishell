@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 17:44:40 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/31 18:46:21 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void	dup_out_fds(int pipefd_p[2], t_command command, t_environment *env)
 
 	if (pipefd_p)
 	{
-		close(pipefd_p[0]);
+		//close(pipefd_p[0]);
 		dup2(pipefd_p[1], STDOUT_FILENO);
 		return ;
 	}
@@ -109,7 +109,10 @@ void	dup_out_fds(int pipefd_p[2], t_command command, t_environment *env)
 	else if (command.out_redirection == DOUBLE_OUT)
 		out_fd = open(command.out_file, O_CREAT | O_WRONLY | O_APPEND, 0644);
 	if (out_fd < 0)
+	{
+		errprint("%s: No such file or directory\n", command.out_file, env);
 		exit(EXIT_FAILURE);
+	}
 	dup2(out_fd, STDOUT_FILENO);
 	close(out_fd);
 }

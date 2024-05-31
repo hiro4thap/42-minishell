@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 13:06:48 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/30 18:51:46 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/31 18:48:49 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,26 +56,29 @@ int	is_outredirection_end(char *input)
 
 int	has_redirection_filename(char *input)
 {
-	char	*ptr_in;
-	char	*ptr_out;
+	char	*ptr_file;
 
-	ptr_in = ft_strchrout(input, "\"\'", '<');
-	while (ptr_in && *ptr_in && !is_spacetab(*ptr_in))
+	if (ft_strchrout(input, "\"\'", '<'))
 	{
-		ptr_in++;
-		if (*ptr_in == '|')
-			return (FALSE); //unexpected token `|
-		else if (!*ptr_in)
-			return (FALSE); //unexpected token `newline'
+		ptr_file = ft_strchrout(input, "\"\'", '<') + 1;
+		if (*ptr_file == '<')
+			ptr_file++;
+		while (*ptr_file && is_spacetab(*ptr_file))
+			ptr_file++;
+		if (!ft_isalnum(*ptr_file) && *ptr_file != '[' && *ptr_file != ']'
+			&& *ptr_file != '!' && *ptr_file != '?')
+			return (FALSE);
 	}
-	ptr_out = ft_strchrout(input, "\"\'", '>');
-	while (ptr_out && *ptr_out && !is_spacetab(*ptr_out))
+	if (ft_strchrout(input, "\"\'", '>'))
 	{
-		ptr_out++;
-		if (*ptr_out == '|')
-			return (FALSE); //unexpected token `|
-		else if (!*ptr_out)
-			return (FALSE); //unexpected token `newline'
+		ptr_file = ft_strchrout(input, "\"\'", '>') + 1;
+		if (*ptr_file == '>')
+			ptr_file++;
+		while (*ptr_file && is_spacetab(*ptr_file))
+			ptr_file++;
+		if (!ft_isalnum(*ptr_file) && *ptr_file != '[' && *ptr_file != ']'
+			&& *ptr_file != '!' && *ptr_file != '?')
+			return (FALSE);
 	}
 	return (TRUE);
 }
