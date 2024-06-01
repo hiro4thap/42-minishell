@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 13:06:48 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/31 18:54:57 by hiono            ###   ########.fr       */
+/*   Updated: 2024/05/31 19:45:31 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,25 @@ int	has_redirection_filename(char *input)
 	return (TRUE);
 }
 
+int	has_command_characters(char *input)
+{
+	while (is_spacetab(*input))
+		input++;
+	if (*input == '|')
+		return (FALSE);
+	input = ft_strchrout(input, "\"\'", '|');
+	while (input)
+	{
+		input++;
+		while (is_spacetab(*input))
+			input++;
+		if (!*input || *input == '|')
+			return (FALSE);
+		input = ft_strchrout(input, "\"\'", '|');
+	}
+	return (TRUE);
+}
+
 /// @brief validate if the redirections are used in a allowed format
 /// @param input the string input into terminal
 /// @return TRUE / FALSE
@@ -107,6 +126,11 @@ int	is_valid_redirection(char *input, t_environment *env)
 		return (FALSE);
 	}
 	else if (!has_redirection_filename(input))
+	{
+		errprint("syntax error near unexpected token\n", NULL, env);
+		return (FALSE);
+	}
+	else if (!has_command_characters(input))
 	{
 		errprint("syntax error near unexpected token\n", NULL, env);
 		return (FALSE);

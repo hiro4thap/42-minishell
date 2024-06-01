@@ -6,7 +6,7 @@
 /*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/28 15:13:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 13:48:38 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/01 16:08:59 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ char	*get_current_simple_command(char *command)
 	char	*end;
 	char	*simple_command;
 
+	if (!command)
+		return (NULL);
 	start = command;
 	if (!point_next_simple_command(command))
 		end = ft_strchr(command, '\n');
