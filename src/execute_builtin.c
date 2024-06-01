@@ -6,7 +6,7 @@
 /*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:27:47 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 13:47:59 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/01 16:29:32 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ int	process_builtins(char **commands, t_environment *env)
 	t_command	cmd;
 
 	cmd = parse_command(*commands, env);
+	if (!cmd.command[0])
+		return (FALSE);
 	if (ft_strncmp(cmd.command[0], "exit", 5) == 0)
 	{
 		ft_putendl_fd("exit", STDERR_FILENO);

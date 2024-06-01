@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 13:30:50 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/01 16:33:35 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ void	execute_simple_command(t_command command, t_environment *envp)
 	char	*cmd;
 	char	*pwd;
 
+	if (!command.command[0])
+		exit(EXIT_SUCCESS);
 	if (command.command[0][0] == '.')
 	{
 		pwd = getcwd(NULL, 0);
