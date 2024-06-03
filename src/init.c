@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:39:45 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/29 13:40:04 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/03 10:13:16 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,33 @@ static char	*get_file_from_path(char *path)
 	return (path);
 }
 
+static void	check_vars(t_environment *env)
+{
+	int		value;
+	char	*str;
+
+	if (get_key_index(env, "SHLVL") > -1)
+	{
+		value = ft_atoi(get_value(env, "SHLVL"));
+		if (value > 0)
+		{
+			str = ft_itoa(value + 1);
+			set_var(env, "SHLVL", str);
+			free(str);
+		}
+	}
+	else
+		set_var(env, "SHLVL", "1");
+	if (get_key_index(env, "PATH") == -1)
+		set_var(env, "PATH", "/usr/local/bin:/usr/local/sbin:/usr/bin:/bin");
+}
+
 static void	init_terminal(t_environment *env, char *shell)
 {
 	env->shell = get_file_from_path(shell);
 	env->exit_code = EXIT_SUCCESS;
 	env->echoctl_was_enabled = sig_echo_get_status();
+	env->home = getenv("HOME");
 }
 
 /// @brief Initialises environment from the calling shells environment.
@@ -70,5 +92,6 @@ int	init_environment(t_environment **env, char *shell, char **shell_env)
 		index++;
 	}
 	(*env)->envp[index] = NULL;
+	check_vars(*env);
 	return (EXIT_SUCCESS);
 }

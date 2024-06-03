@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:46:37 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/25 16:19:00 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/03 10:07:48 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,12 @@ int	builtin_cd(t_command command, t_environment *env)
 		update_pwd(env);
 		return (EXIT_SUCCESS);
 	}
-	if (chdir(command.command[1]) != 0)
+	if (env->home && ft_strncmp(command.command[1], "~", 2) == 0)
+	{
+		if (chdir(env->home) != 0)
+			return (error(env, env->home, NULL));
+	}
+	else if (chdir(command.command[1]) != 0)
 		return (error(env, command.command[1], NULL));
 	update_pwd(env);
 	return (EXIT_SUCCESS);

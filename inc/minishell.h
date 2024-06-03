@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 13:51:53 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/03 09:58:58 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ typedef struct s_environment
 	int			max_size;
 	int			exit_code;
 	int			echoctl_was_enabled;
+	const char	*home;
 }	t_environment;
 
 typedef struct s_command
