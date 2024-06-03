@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 14:12:51 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/03 15:36:56 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,8 @@ int	main(int argc, char **argv, char **envp)
 	t_environment	*env;
 
 	(void) argc;
-	(void) argv;
 	init_environment(&env, argv[0], envp);
 	using_history();
-	sig_echo_disable();
 	while (TRUE)
 	{
 		set_interactive(TRUE, env);
