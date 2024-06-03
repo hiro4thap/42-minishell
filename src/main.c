@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 14:12:51 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/03 17:12:00 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,17 +44,13 @@ int	main(int argc, char **argv, char **envp)
 	t_environment	*env;
 
 	(void) argc;
-	(void) argv;
 	init_environment(&env, argv[0], envp);
 	using_history();
 	sig_echo_disable();
 	while (TRUE)
 	{
 		set_interactive(TRUE, env);
-		if (env->exit_code)
-			input = readline("\001\e[1;31m\002> \001\e[0m\002");
-		else
-			input = readline("\001\e[1;34m\002> \001\e[0m\002");
+		get_prompt(env, &input);
 		set_interactive(FALSE, env);
 		if (!input)
 			builtin_exit(NULL, env);
