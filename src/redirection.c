@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/31 18:46:21 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/05 14:37:39 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,15 +61,11 @@ void	dup_in_fds(int pipefd_c[2], t_command command, int index,
 	else if (command.in_redirection == SINGLE_IN)
 	{
 		if (access(command.in_file, F_OK))
-		{
-			errprint("%s: No such file or directory\n", command.in_file, env);
-			exit(EXIT_FAILURE);
-		}
+			errprint_exit("%s: No such file or directory\n", command.in_file,
+				env, EXIT_FAILURE);
 		else if (access(command.in_file, R_OK))
-		{
-			errprint("%s: Permission denied\n", command.in_file, env);
-			exit(EXIT_FAILURE);
-		}
+			errprint_exit("%s: Permission denied\n", command.in_file,
+				env, EXIT_FAILURE);
 		in_fd = open(command.in_file, O_RDONLY);
 		if (in_fd < 0)
 			exit(EXIT_FAILURE);
@@ -92,27 +88,23 @@ void	dup_out_fds(int pipefd_p[2], t_command command, t_environment *env)
 
 	if (pipefd_p)
 	{
-		//close(pipefd_p[0]);
+		close(pipefd_p[0]);
 		dup2(pipefd_p[1], STDOUT_FILENO);
 		return ;
 	}
 	if (command.out_redirection == NONE)
 		return ;
 	if (!access(command.out_file, F_OK) && access(command.out_file, W_OK))
-	{
-		errprint("%s: Permission denied\n", command.out_file, env);
-		exit(EXIT_FAILURE);
-	}
+		errprint_exit("%s: Permission denied\n", command.out_file,
+			env, EXIT_FAILURE);
 	out_fd = STDOUT_FILENO;
 	if (command.out_redirection == SINGLE_OUT)
 		out_fd = open(command.out_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	else if (command.out_redirection == DOUBLE_OUT)
 		out_fd = open(command.out_file, O_CREAT | O_WRONLY | O_APPEND, 0644);
 	if (out_fd < 0)
-	{
-		errprint("%s: No such file or directory\n", command.out_file, env);
-		exit(EXIT_FAILURE);
-	}
+		errprint_exit("%s: No such file or directory\n", command.out_file,
+			env, EXIT_FAILURE);
 	dup2(out_fd, STDOUT_FILENO);
 	close(out_fd);
 }

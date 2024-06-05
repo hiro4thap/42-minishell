@@ -6,7 +6,7 @@
 /*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 16:11:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 14:24:38 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/05 15:44:11 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,14 @@ char	*get_current_token(char *ptr)
 	while (is_spacetab(*ptr))
 		ptr++;
 	ptr_start = ptr;
-	if (is_quote(*ptr))
-		ptr = ft_strchr(ptr + 1, *ptr) + 1;
-	else if (is_anglebracket(*ptr))
+	if (is_anglebracket(*ptr))
 		ptr = ft_strrchr(ptr, *ptr) + 1;
-	else
-		while (*ptr && !is_anglebracket(*ptr) && !is_spacetab(*ptr))
-			ptr++;
+	while (*ptr && !is_spacetab(*ptr) && !is_anglebracket(*ptr))
+	{
+		if (is_quote(*ptr) && ft_strchr(ptr + 1, *ptr))
+			ptr = ft_strchr(ptr + 1, *ptr);
+		ptr++;
+	}
 	token = ft_substr(ptr_start, 0, ptr - ptr_start);
 	return (token);
 }
@@ -41,13 +42,14 @@ char	*point_next_token(char *ptr)
 {
 	while (is_spacetab(*ptr))
 		ptr++;
-	if (is_quote(*ptr))
-		ptr = ft_strchr(ptr + 1, *ptr) + 1;
-	else if (is_anglebracket(*ptr))
+	if (is_anglebracket(*ptr))
 		ptr = ft_strrchr(ptr, *ptr) + 1;
-	else
-		while (*ptr && !is_anglebracket(*ptr) && !is_spacetab(*ptr))
-			ptr++;
+	while (*ptr && !is_spacetab(*ptr) && !is_anglebracket(*ptr))
+	{
+		if (is_quote(*ptr) && ft_strchr(ptr + 1, *ptr))
+			ptr = ft_strchr(ptr + 1, *ptr);
+		ptr++;
+	}
 	while (is_spacetab(*ptr))
 		ptr++;
 	if (!*ptr)
@@ -136,7 +138,7 @@ t_command	parse_command(char *simple_command, t_environment *env)
 			simple_command = point_next_token(simple_command);
 		}
 		else
-			command.command[i++] = expand_variables(token, env);
+			command.command[i++] = expand_token(token, env);
 		free(token);
 		simple_command = point_next_token(simple_command);
 	}

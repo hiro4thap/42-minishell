@@ -6,88 +6,119 @@
 /*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 17:53:54 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 14:19:32 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/05 16:36:16 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-// [MALLOC]
-char	*expand_variable(char *chank, t_environment *env)
+char	*get_chank(char	*token)
 {
-	const char	*expanded_value;
+	char	*end;
 
-	if (*chank != '$' || ft_strlen(chank) == 1)
-		return (ft_strdup(chank));
-	else if (!ft_strncmp(chank, "$?", 3))
-		return (ft_itoa(env->exit_code));
-	expanded_value = get_value(env, chank + 1);
-	if (!expanded_value)
-		return (ft_strdup(""));
-	return (ft_strdup(expanded_value));
+	if (is_quote(*token))
+	{
+		end = ft_strchr(token + 1, *token);
+		if (!end)
+			end = token;
+		end++;
+	}
+	else
+	{
+		end = token;
+		while (*end && !is_quote(*end))
+			end++;
+	}
+	return (ft_substr(token, 0, end - token));
 }
 
-int	count_chanks(char *token)
+char	*get_var(char *dollar)
 {
-	int	len;
+	char	*end;
 
-	len = 0;
-	while (token && *token)
-	{
-		len++;
-		token = point_next_chank(token);
-	}
-	return (len);
+	end = dollar + 1;
+	if (*end == '?')
+		return (ft_substr(dollar, 0, 2));
+	if (!ft_isalpha(*end) && *end != '_')
+		return (ft_strdup("$"));
+	while (ft_isalpha(*end) || *end == '_')
+		end++;
+	return (ft_substr(dollar, 0, end - dollar));
 }
 
-char	**split_token(char *token, t_environment *env)
+char	*expand_var(char *expanded, char *var, t_environment *env)
 {
-	int		len;
-	char	*chank;
-	char	**chanks;
-	int		i;
+	char	*value;
+	char	*temp;
 
-	len = count_chanks(token);
-	chanks = malloc((len + 1) * sizeof(char *));
-	i = 0;
-	while (i < len)
+	if (!ft_strncmp(var, "$?", 3))
+		value = ft_itoa(env->exit_code);
+	else if (ft_strncmp(var, "$", 2) && get_value(env, var + 1))
+		value = ft_strdup(get_value(env, var + 1));
+	else
+		value = NULL;
+	if (value)
 	{
-		chank = get_current_chank(token);
-		chanks[i] = expand_variable(chank, env);
-		token = point_next_chank(token);
-		free(chank);
-		i++;
+		temp = replace_substr(expanded, var, value);
+		free(value);
 	}
-	chanks[i] = NULL;
-	return (chanks);
+	else
+		temp = replace_substr(expanded, var, "");
+	free(expanded);
+	return (temp);
+}
+
+char	*expand_chank(char *chank, t_environment *env)
+{
+	char	*expanded;
+	char	*dollar;
+	char	*var;
+
+	expanded = ft_strdup(chank);
+	dollar = ft_strchr(chank, '$');
+	while (dollar)
+	{
+		var = get_var(dollar);
+		if (!ft_strncmp(var, "$", 2))
+		{
+			dollar = ft_strchr(dollar + 1, '$');
+			continue ;
+		}
+		expanded = expand_var(expanded, var, env);
+		free(var);
+		dollar = ft_strchr(dollar + 1, '$');
+	}
+	free(chank);
+	return (expanded);
 }
 
 /// @brief handle token by expanding variable and trimming quotes
 /// @param token a token that needs to be expanded
 /// @param env environment variable
 /// @return expnaded and quotes-trimmed string
-char	*expand_variables(char *token, t_environment *env)
+char	*expand_token(char *token, t_environment *env)
 {
-	char	*trimmed_token;
-	char	**chanks;
-	size_t	i;
-	char	*expanded_token;
+	char	*str;
+	char	*chank;
+	char	*trimmed;
 	char	*temp;
 
-	if (token[0] == '\'' && token[ft_strlen(token) - 1] == '\'')
-		return (trim_quote(token));
-	trimmed_token = trim_quote(token);
-	chanks = split_token(trimmed_token, env);
-	i = 0;
-	expanded_token = "";
-	while (i < ft_strarr_len(chanks))
+	str = NULL;
+	while (*token)
 	{
-		temp = ft_strjoin(expanded_token, chanks[i]);
-		expanded_token = ft_strdup(temp);
-		free(temp);
-		i++;
+		chank = get_chank(token);
+		token += ft_strlen(chank);
+		if (chank[0] != '\'' && chank[ft_strlen(chank) - 1] != '\'')
+			chank = expand_chank(chank, env);
+		trimmed = trim_quote(chank);
+		if (!str)
+			temp = ft_strdup(trimmed);
+		else
+			temp = ft_strjoin(str, trimmed);
+		free(str);
+		str = temp;
+		free(chank);
+		free(trimmed);
 	}
-	free(trimmed_token);
-	ft_strarr_clear(chanks);
-	return (expanded_token);
+	return (str);
 }

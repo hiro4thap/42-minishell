@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/29 14:12:51 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/04 17:25:51 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,15 @@ int	handle_input(char *input, t_environment *env)
 		free(input);
 		return (0);
 	}
-	if (!is_valid_redirection(trimmed_input))
+	if (*trimmed_input)
+		add_history(input);
+	if (!is_valid_redirection(trimmed_input, env))
 	{
 		free(input);
 		return (0);
 	}
 	if (*trimmed_input)
 	{
-		add_history(input);
 		commands(trimmed_input, env);
 		rl_on_new_line();
 	}

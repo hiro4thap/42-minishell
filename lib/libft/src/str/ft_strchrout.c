@@ -6,7 +6,7 @@
 /*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 18:01:41 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/30 18:56:16 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/04 13:12:08 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ char	*ft_strchrout(const char *str, const char *quotes, char c)
 	{
 		if (*tmp == c)
 			return ((char *) tmp);
-		if (is_in(quotes, *tmp))
+		if (is_in(quotes, *tmp) && ft_strchr(tmp + 1, *tmp))
 			tmp = ft_strchr(tmp + 1, *tmp);
 		tmp++;
 	}

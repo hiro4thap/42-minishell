@@ -6,7 +6,7 @@
 /*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/28 15:13:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/01 16:08:59 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/04 13:09:18 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ char	*point_next_simple_command(char *command)
 			command++;
 			break ;
 		}
-		if (is_quote(*command))
+		if (is_quote(*command) && ft_strchr(command + 1, *command))
 			command = ft_strchr(command + 1, *command);
 		command++;
 	}

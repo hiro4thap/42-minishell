@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/30 18:42:41 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/05 14:28:37 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,11 @@ int			remove_var(t_environment *env, char *key);
 const char	*get_value(t_environment *env, char *key);
 
 t_command	parse_command(char *cmd, t_environment *env);
+int			is_redirection_one(char *input);
+int			is_inredirection_start(char *input);
+int			is_outredirection_end(char *input);
+int			has_redirection_filename(char *input);
+int			has_command_characters(char *input);
 int			is_valid_redirection(char *input, t_environment *env);
 void		commands(char *input, t_environment *envp);
 char		**split_command(char *command);
@@ -116,10 +121,12 @@ void		sig_echo_disable(void);
 int			sig_echo_get_status(void);
 
 void		errprint(char *msg, char *fail, t_environment *env);
+void		errprint_exit(char *format, char *fail, t_environment *env,
+				int exit_code);
 char		*trim_quote(char *token);
-char		*point_next_chank(char *token);
-char		*get_current_chank(char *token);
-char		*expand_variables(char *token, t_environment *env);
+char		*replace_substr(char *str, const char *toreplace,
+				const char *replacement);
+char		*expand_token(char *token, t_environment *env);
 int			is_quote(char c);
 int			is_spacetab(char c);
 int			is_anglebracket(char c);
