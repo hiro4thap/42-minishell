@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/01 16:33:35 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/08 15:38:22 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,70 @@ void	execute_commands(
 	else if (pid == 0 && index == 0)
 		exit(EXIT_SUCCESS);
 }
+# define PIPE_READ 0
+# define PIPE_WRITE 1
+
+
+void	child(int pipe_in[2], int pipe_out[2], t_command command, t_environment * env)
+{
+	if (pipe_in)
+	{
+		dup2(pipe_in[PIPE_READ], STDIN_FILENO);
+		close(pipe_in[PIPE_READ]);
+	}
+	if (pipe_out)
+	{
+		close(pipe_out[PIPE_READ]);
+		dup2(pipe_out[PIPE_WRITE], STDOUT_FILENO);
+		close(pipe_out[PIPE_WRITE]);
+	}
+	execute_simple_command(command, env);
+}
+
+void	parent(int pipe_in[2], int pipe_out[2])
+{
+	if (pipe_in)
+	{
+		close(pipe_in[PIPE_READ]);
+	}
+	if (pipe_out)
+	{
+		close(pipe_out[PIPE_WRITE]);
+	}
+}
+
+int	execute(char **commands, int num_commands, t_environment *env)
+{
+	int			*pipes;
+	int			pid;
+	t_command	command;
+
+	pipes = malloc(sizeof(int) * (2 * num_commands));
+	for (int i = 0; i < num_commands; i++)
+	{
+		command = parse_command(commands[i], env);
+		pipe(pipes + 2 * i);
+		pid = fork();
+		if (pid == 0)
+		{
+			if (i == 0)
+				child(NULL, pipes + 2 * i, command, env);
+			else if (i != num_commands - 1)
+				child(pipes + 2 * (i - 1), pipes + 2 * i, command, env);
+			else
+				child(pipes + 2 * (i - 1), NULL, command, env);
+			continue ;
+		}
+		if (i == 0)
+			parent(NULL, pipes + 2 * i);
+		else if (i != num_commands - 1)
+			parent(pipes + 2 * (i - 1), pipes + 2 * i);
+		else
+			parent(pipes + 2 * (i - 1), NULL);
+		free(command.command);
+	}
+	return (pid);
+}
 
 /// @brief split the whole command into chanks by pipelines before execution
 /// @param input the string input through prompt
@@ -112,17 +176,12 @@ void	commands(char *input, t_environment *env)
 	arrlen = ft_strarr_len(commands);
 	if ((arrlen == 1 && !process_builtins(commands, env)) || arrlen > 1)
 	{
-		pid = fork();
-		if (pid == -1)
-			exit(EXIT_FAILURE);
-		if (pid == 0)
-			execute_commands(commands, NULL, arrlen - 1, env);
-		if (0 < pid)
-		{
-			waitpid(pid, &status, 0);
-			if (WIFEXITED(status))
-				env->exit_code = WEXITSTATUS(status);
-		}
+		pid = execute(commands, arrlen, env);
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			env->exit_code = WEXITSTATUS(status);
+		while (wait(0) > 0)
+			continue ;
 	}
 	ft_strarr_clear(commands);
 }
