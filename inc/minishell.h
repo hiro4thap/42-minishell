@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/05 14:28:37 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/08 16:50:23 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,9 @@ struct termios
 # define TRUE 1
 # define FALSE 0
 
+# define PIPE_READ 0
+# define PIPE_WRITE 1
+
 /// @brief The minishell environment
 typedef struct s_environment
 {
@@ -77,6 +80,7 @@ typedef struct s_environment
 
 typedef struct s_command
 {
+	int		id;
 	int		in_redirection;		//0:none 1:< 2:<<
 	char	*in_file;
 	int		out_redirection;	//0:none 1:> 2:>>
@@ -96,13 +100,14 @@ typedef enum e_redirection
 
 int			init_environment(t_environment **env,
 				char *shell, char **shell_env);
+
 int			get_key_index(t_environment *env, char *key);
 int			add_var(t_environment *env, char *key, char *value);
 int			set_var(t_environment *env, char *key, char *value);
 int			remove_var(t_environment *env, char *key);
 const char	*get_value(t_environment *env, char *key);
 
-t_command	parse_command(char *cmd, t_environment *env);
+t_command	parse_command(int id, char *cmd, t_environment *env);
 int			is_redirection_one(char *input);
 int			is_inredirection_start(char *input);
 int			is_outredirection_end(char *input);
@@ -110,7 +115,10 @@ int			has_redirection_filename(char *input);
 int			has_command_characters(char *input);
 int			is_valid_redirection(char *input, t_environment *env);
 void		commands(char *input, t_environment *envp);
+
 char		**split_command(char *command);
+void		run_file(t_command command, t_environment *envp);
+
 void		dup_out_fds(int pipefd_p[2], t_command command, t_environment *env);
 void		dup_in_fds(int pipefd_c[2], t_command command, int index,
 				t_environment *env);

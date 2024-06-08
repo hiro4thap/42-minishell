@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command.c                                          :+:      :+:    :+:   */
+/*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 16:11:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/05 15:44:11 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/08 16:27:03 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,14 +117,14 @@ t_command	handle_redirections(
 /// @brief parse a simple command by splitting it into tokens
 /// @param simple_command a command split by pipeline
 /// @return [MALLOC] t_command instance with parameters filled
-t_command	parse_command(char *simple_command, t_environment *env)
+t_command	parse_command(int id, char *simple_command, t_environment *env)
 {
 	int			i;
-	int			len;
+	const int	len = count_command(simple_command);
 	char		*token;
 	t_command	command;
 
-	len = count_command(simple_command);
+	command.id = id;
 	command.command = malloc((len + 1) * sizeof(char *));
 	i = 0;
 	command.in_redirection = NONE;

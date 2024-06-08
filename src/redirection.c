@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiono <hiono@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/05 14:37:39 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/08 16:16:57 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,11 @@ void	heredoc_in(int pipefd_c[2], t_command command)
 			else
 				input = ft_strconcat(input, line, "\n", NULL);
 		}
-		ft_putstr_fd(input, pipefd_c[1]);
+		ft_putstr_fd(input, pipefd_c[PIPE_WRITE]);
 		exit(EXIT_SUCCESS);
 	}
 	else if (0 < pid)
-		dup2(pipefd_c[0], STDIN_FILENO);
+		dup2(pipefd_c[PIPE_READ], STDIN_FILENO);
 }
 
 /// @brief sets the stdin file descripter correspoinding to the redirection.
@@ -51,13 +51,17 @@ void	heredoc_in(int pipefd_c[2], t_command command)
 /// The command will take input from the pipe
 /// @param command t_command structure to be execute
 /// @param index 
-void	dup_in_fds(int pipefd_c[2], t_command command, int index,
+void	dup_in_fds(int pipe_in[2], t_command command, int index,
 		t_environment *env)
 {
 	int		in_fd;
 
 	if (0 < index)
-		dup2(pipefd_c[0], STDIN_FILENO);
+	{
+		dup2(pipe_in[PIPE_READ], STDIN_FILENO);
+		close(pipe_in[PIPE_READ]);
+		return ;
+	}
 	else if (command.in_redirection == SINGLE_IN)
 	{
 		if (access(command.in_file, F_OK))
@@ -72,9 +76,9 @@ void	dup_in_fds(int pipefd_c[2], t_command command, int index,
 		dup2(in_fd, STDIN_FILENO);
 		close(in_fd);
 	}
-	else if (command.in_redirection == DOUBLE_IN)
-		heredoc_in(pipefd_c, command);
-	close(pipefd_c[1]);
+	// else if (command.in_redirection == DOUBLE_IN)
+	// 	heredoc_in(pipe_in, command);
+	// close(pipe_in[PIPE_WRITE]);
 }
 
 /// @brief sets the stdout file descripter correspoinding to the redirection.
@@ -82,14 +86,15 @@ void	dup_in_fds(int pipefd_c[2], t_command command, int index,
 /// @param pipefd_p pipe passed from parent process.
 /// The command will pass the result to the pipe
 /// @param command t_command structure to be execute
-void	dup_out_fds(int pipefd_p[2], t_command command, t_environment *env)
+void	dup_out_fds(int pipe_out[2], t_command command, t_environment *env)
 {
 	int		out_fd;
 
-	if (pipefd_p)
+	if (pipe_out)
 	{
-		close(pipefd_p[0]);
-		dup2(pipefd_p[1], STDOUT_FILENO);
+		close(pipe_out[PIPE_READ]);
+		dup2(pipe_out[PIPE_WRITE], STDOUT_FILENO);
+		close(pipe_out[PIPE_WRITE]);
 		return ;
 	}
 	if (command.out_redirection == NONE)

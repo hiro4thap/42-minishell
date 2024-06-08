@@ -6,35 +6,11 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/08 15:38:22 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/08 16:55:54 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-void	run_file(t_command command, t_environment *envp)
-{
-	char	*path;
-	char	**dirs;
-	char	*cmd;
-	int		i;
-
-	if (get_value(envp, "PATH"))
-		path = ft_strdup(get_value(envp, "PATH"));
-	else
-		path = getcwd(NULL, 0);
-	dirs = ft_split(path, ':');
-	i = 0;
-	while (dirs[i])
-	{
-		cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
-		execve(cmd, command.command, envp->envp);
-		free(cmd);
-		i++;
-	}
-	free(path);
-	ft_strarr_clear(dirs);
-}
 
 /// @brief searching executable file in PATH directories before execution.
 /// If file is not found, a message will be displayed
@@ -66,67 +42,46 @@ void	execute_simple_command(t_command command, t_environment *envp)
 	exit(EXIT_COMMAND_NOT_EXIST);
 }
 
-/// @brief parent process handles file descripter and exectue simple command
-/// child process recursively execute itself unless it's the first command
-/// @param commands whole array of simple commands
-/// @param pipefd_p pipe passed from parent process.
-/// The function will pass the result of executing command to the pipe
-/// @param index index for the simple command to execute
-/// @param envp TODO:should be replaced by get_value functions
-void	execute_commands(
-		char **commands, int pipefd_p[2], int index, t_environment *envp)
+/// @brief Sets up the pipe redirection for the current command, then calls the
+/// command.
+/// @param command Struct containing all necessary details of current commmand.
+/// @param last_command TRUE if last command, FALSE otherwise.
+/// @param pipes Pointer to the array of pipes.
+/// @param env The minishell environment.
+void	child(t_command command, int last_command, int *pipes,
+	t_environment *env)
 {
-	int			pipefd_c[2];
-	int			pid;
-	t_command	command;
-
-	if (pipe(pipefd_c) == -1)
-		exit(EXIT_FAILURE);
-	pid = fork();
-	if (pid == -1)
-		exit(EXIT_FAILURE);
-	if (0 < pid)
-	{
-		command = parse_command(commands[index], envp);
-		dup_in_fds(pipefd_c, command, index, envp);
-		dup_out_fds(pipefd_p, command, envp);
-		execute_simple_command(command, envp);
-	}
-	else if (pid == 0 && 0 < index)
-		execute_commands(commands, pipefd_c, index - 1, envp);
-	else if (pid == 0 && index == 0)
-		exit(EXIT_SUCCESS);
-}
-# define PIPE_READ 0
-# define PIPE_WRITE 1
-
-
-void	child(int pipe_in[2], int pipe_out[2], t_command command, t_environment * env)
-{
-	if (pipe_in)
-	{
-		dup2(pipe_in[PIPE_READ], STDIN_FILENO);
-		close(pipe_in[PIPE_READ]);
-	}
-	if (pipe_out)
-	{
-		close(pipe_out[PIPE_READ]);
-		dup2(pipe_out[PIPE_WRITE], STDOUT_FILENO);
-		close(pipe_out[PIPE_WRITE]);
-	}
+	if (command.id == 0)
+		dup_in_fds(NULL, command, command.id, env);
+	else
+		dup_in_fds(pipes + 2 * (command.id - 1), command, command.id, env);
+	if (last_command)
+		dup_out_fds(NULL, command, env);
+	else
+		dup_out_fds(pipes + 2 * command.id, command, env);
 	execute_simple_command(command, env);
 }
 
-void	parent(int pipe_in[2], int pipe_out[2])
+/// @brief Ensures the relevant pipes are closed in the parent so that the pipes
+/// in the child process close properly.
+/// @param i The index of the current command.
+/// @param num_commands The total number of commands.
+/// @param pipes Pointer to the array of pipes.
+void	parent(int i, int num_commands, int *pipes)
 {
+	int	*pipe_in;
+	int	*pipe_out;
+
+	pipe_in = NULL;
+	pipe_out = NULL;
+	if (i > 0)
+		pipe_in = pipes + 2 * (i - 1);
+	if (i != num_commands - 1)
+		pipe_out = pipes + 2 * i;
 	if (pipe_in)
-	{
 		close(pipe_in[PIPE_READ]);
-	}
 	if (pipe_out)
-	{
 		close(pipe_out[PIPE_WRITE]);
-	}
 }
 
 int	execute(char **commands, int num_commands, t_environment *env)
@@ -134,30 +89,31 @@ int	execute(char **commands, int num_commands, t_environment *env)
 	int			*pipes;
 	int			pid;
 	t_command	command;
+	int			index;
 
 	pipes = malloc(sizeof(int) * (2 * num_commands));
-	for (int i = 0; i < num_commands; i++)
+	if (!pipes)
+		return (EXIT_NO_MEMORY);
+	index = 0;
+	while (index < num_commands)
 	{
-		command = parse_command(commands[i], env);
-		pipe(pipes + 2 * i);
+		command = parse_command(index, commands[index], env);
+		if (pipe(pipes + 2 * index) == -1)
+			exit(EXIT_FAILURE);
 		pid = fork();
+		if (pid == -1)
+			exit(EXIT_FAILURE);
 		if (pid == 0)
 		{
-			if (i == 0)
-				child(NULL, pipes + 2 * i, command, env);
-			else if (i != num_commands - 1)
-				child(pipes + 2 * (i - 1), pipes + 2 * i, command, env);
+			if (index != num_commands - 1)
+				child(command, FALSE, pipes, env);
 			else
-				child(pipes + 2 * (i - 1), NULL, command, env);
+				child(command, TRUE, pipes, env);
 			continue ;
 		}
-		if (i == 0)
-			parent(NULL, pipes + 2 * i);
-		else if (i != num_commands - 1)
-			parent(pipes + 2 * (i - 1), pipes + 2 * i);
-		else
-			parent(pipes + 2 * (i - 1), NULL);
+		parent(index, num_commands, pipes);
 		free(command.command);
+		index++;
 	}
 	return (pid);
 }

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   execute_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/28 15:13:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/04 13:09:18 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/08 16:49:32 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-char	*point_next_simple_command(char *command)
+static char	*point_next_simple_command(char *command)
 {
 	while (*command)
 	{
@@ -30,7 +30,7 @@ char	*point_next_simple_command(char *command)
 	return (command);
 }
 
-int	count_simple_commands(char *command)
+static int	count_simple_commands(char *command)
 {
 	int	len;
 
@@ -44,7 +44,7 @@ int	count_simple_commands(char *command)
 }
 
 // [MALLOC]
-char	*get_current_simple_command(char *command)
+static char	*get_current_simple_command(char *command)
 {
 	char	*start;
 	char	*end;
@@ -78,4 +78,28 @@ char	**split_command(char *command)
 	}
 	simple_commands[i] = NULL;
 	return (simple_commands);
+}
+
+void	run_file(t_command command, t_environment *envp)
+{
+	char	*path;
+	char	**dirs;
+	char	*cmd;
+	int		i;
+
+	if (get_value(envp, "PATH"))
+		path = ft_strdup(get_value(envp, "PATH"));
+	else
+		path = getcwd(NULL, 0);
+	dirs = ft_split(path, ':');
+	i = 0;
+	while (dirs[i])
+	{
+		cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
+		execve(cmd, command.command, envp->envp);
+		free(cmd);
+		i++;
+	}
+	free(path);
+	ft_strarr_clear(dirs);
 }
