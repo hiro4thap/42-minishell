@@ -6,22 +6,45 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 17:36:54 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 18:22:19 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
+/// @brief A child process that handles reading input for heredoc, piping it to
+/// the parent's STDIN.
+/// @param command t_command structure which includs the EOF string
+/// @param heredoc_pipe The pipe to pass output through.
+static void	heredoc_readinput(t_command command, int heredoc_pipe[2])
+{
+	char	*line;
+	char	*input;
+
+	close(heredoc_pipe[PIPE_READ]);
+	input = NULL;
+	while (TRUE)
+	{
+		line = readline("\001\e[1;32m\002here_doc> \001\e[0m\002");
+		if (!ft_strncmp(line, command.heredoc_eof, ft_strlen(line) + 1))
+			break ;
+		if (!input)
+			input = ft_strjoin(line, "\n");
+		else
+			input = ft_strconcat(input, line, "\n", NULL);
+	}
+	ft_putstr_fd(input, heredoc_pipe[PIPE_WRITE]);
+	close(heredoc_pipe[PIPE_WRITE]);
+	exit(EXIT_SUCCESS);
+}
+
 /// @brief child process takes input from terminal until it hits the EOF string
 /// and passes it to the pipe so that command can take it as input
-/// @param pipefd_c the pipe to pass the input of heredoc
 /// @param command t_command structure which includs the EOF string
-void	heredoc_in(t_command command)
+static void	heredoc_in(t_command command)
 {
 	int		heredoc_pipe[2];
 	int		pid;
-	char	*line;
-	char	*input;
 
 	if (pipe(heredoc_pipe) == -1)
 		return ;
@@ -29,23 +52,7 @@ void	heredoc_in(t_command command)
 	if (pid < -1)
 		exit(EXIT_FAILURE);
 	else if (pid == 0)
-	{
-		close(heredoc_pipe[PIPE_READ]);
-		input = NULL;
-		while (TRUE)
-		{
-			line = readline("\e[1;34mhere_doc> \e[0m");
-			if (!ft_strncmp(line, command.heredoc_eof, ft_strlen(line) + 1))
-				break ;
-			if (!input)
-				input = ft_strjoin(line, "\n");
-			else
-				input = ft_strconcat(input, line, "\n", NULL);
-		}
-		ft_putstr_fd(input, heredoc_pipe[PIPE_WRITE]);
-		close(heredoc_pipe[PIPE_WRITE]);
-		exit(EXIT_SUCCESS);
-	}
+		heredoc_readinput(command, heredoc_pipe);
 	else if (0 < pid)
 	{
 		close(heredoc_pipe[PIPE_WRITE]);
@@ -89,7 +96,6 @@ void	dup_in_fds(int pipe_in[2], t_command command, int index,
 	}
 	else if (command.in_redirection == DOUBLE_IN)
 		heredoc_in(command);
-	//close(pipe_in[PIPE_WRITE]);
 }
 
 /// @brief sets the stdout file descripter correspoinding to the redirection.
