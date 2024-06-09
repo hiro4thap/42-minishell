@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 14:59:01 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 17:36:54 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 /// and passes it to the pipe so that command can take it as input
 /// @param pipefd_c the pipe to pass the input of heredoc
 /// @param command t_command structure which includs the EOF string
-void	heredoc_in(int pipefd_c[2], t_command command)
+void	heredoc_in(t_command command)
 {
 	int		heredoc_pipe[2];
 	int		pid;
@@ -42,7 +42,7 @@ void	heredoc_in(int pipefd_c[2], t_command command)
 			else
 				input = ft_strconcat(input, line, "\n", NULL);
 		}
-		ft_putstr_fd(input, pipefd_c[PIPE_WRITE]);
+		ft_putstr_fd(input, heredoc_pipe[PIPE_WRITE]);
 		close(heredoc_pipe[PIPE_WRITE]);
 		exit(EXIT_SUCCESS);
 	}
@@ -88,7 +88,7 @@ void	dup_in_fds(int pipe_in[2], t_command command, int index,
 		close(in_fd);
 	}
 	else if (command.in_redirection == DOUBLE_IN)
-		heredoc_in(pipe_in, command);
+		heredoc_in(command);
 	//close(pipe_in[PIPE_WRITE]);
 }
 
