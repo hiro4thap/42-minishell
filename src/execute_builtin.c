@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_builtin.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:27:47 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/01 16:29:32 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/09 14:35:03 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	process_builtins(char **commands, t_environment *env)
 {
 	t_command	cmd;
 
-	cmd = parse_command(*commands, env);
+	cmd = parse_command(0, *commands, env);
 	if (!cmd.command[0])
 		return (FALSE);
 	if (ft_strncmp(cmd.command[0], "exit", 5) == 0)
