@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 10:47:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/05/28 21:47:30 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 19:42:43 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ void	set_interactive(int is_interative, t_environment *env)
 	struct sigaction	interupt;
 	struct sigaction	quit;
 
+	ft_memset(&interupt, 0, sizeof(interupt));
+	ft_memset(&quit, 0, sizeof(quit));
 	if (g_sig_num)
 	{
 		if (g_sig_num > 0)
