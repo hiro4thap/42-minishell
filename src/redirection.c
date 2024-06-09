@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/08 16:16:57 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 14:59:01 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,19 @@
 /// @param command t_command structure which includs the EOF string
 void	heredoc_in(int pipefd_c[2], t_command command)
 {
+	int		heredoc_pipe[2];
 	int		pid;
 	char	*line;
 	char	*input;
 
+	if (pipe(heredoc_pipe) == -1)
+		return ;
 	pid = fork();
 	if (pid < -1)
 		exit(EXIT_FAILURE);
 	else if (pid == 0)
 	{
+		close(heredoc_pipe[PIPE_READ]);
 		input = NULL;
 		while (TRUE)
 		{
@@ -39,10 +43,17 @@ void	heredoc_in(int pipefd_c[2], t_command command)
 				input = ft_strconcat(input, line, "\n", NULL);
 		}
 		ft_putstr_fd(input, pipefd_c[PIPE_WRITE]);
+		close(heredoc_pipe[PIPE_WRITE]);
 		exit(EXIT_SUCCESS);
 	}
 	else if (0 < pid)
-		dup2(pipefd_c[PIPE_READ], STDIN_FILENO);
+	{
+		close(heredoc_pipe[PIPE_WRITE]);
+		dup2(heredoc_pipe[PIPE_READ], STDIN_FILENO);
+		close(heredoc_pipe[PIPE_READ]);
+		while (wait(0) > 0)
+			continue ;
+	}
 }
 
 /// @brief sets the stdin file descripter correspoinding to the redirection.
@@ -76,9 +87,9 @@ void	dup_in_fds(int pipe_in[2], t_command command, int index,
 		dup2(in_fd, STDIN_FILENO);
 		close(in_fd);
 	}
-	// else if (command.in_redirection == DOUBLE_IN)
-	// 	heredoc_in(pipe_in, command);
-	// close(pipe_in[PIPE_WRITE]);
+	else if (command.in_redirection == DOUBLE_IN)
+		heredoc_in(pipe_in, command);
+	//close(pipe_in[PIPE_WRITE]);
 }
 
 /// @brief sets the stdout file descripter correspoinding to the redirection.
