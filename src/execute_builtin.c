@@ -6,11 +6,22 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:27:47 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 14:35:03 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 22:03:27 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+
+void	free_command(t_command *command)
+{
+	ft_strarr_clear(command->command);
+	if (command->in_file)
+		free(command->in_file);
+	if (command->out_file)
+		free(command->out_file);
+	if (command->heredoc_eof)
+		free(command->heredoc_eof);
+}
 
 int	is_builtin(t_command command)
 {
@@ -54,12 +65,15 @@ int	process_builtins(char **commands, t_environment *env)
 
 	cmd = parse_command(0, *commands, env);
 	if (!cmd.command[0])
+	{
+		free_command(&cmd);
 		return (FALSE);
+	}
 	if (ft_strncmp(cmd.command[0], "exit", 5) == 0)
 	{
 		ft_putendl_fd("exit", STDERR_FILENO);
 		env->exit_code = builtin_exit(&cmd, env);
-		ft_strarr_clear(cmd.command);
+		free_command(&cmd);
 		return (TRUE);
 	}
 	else if (ft_strncmp(cmd.command[0], "export", 7) == 0
@@ -67,9 +81,9 @@ int	process_builtins(char **commands, t_environment *env)
 		|| ft_strncmp(cmd.command[0], "cd", 3) == 0)
 	{
 		env->exit_code = run_builtin(cmd, env);
-		ft_strarr_clear(cmd.command);
+		free_command(&cmd);
 		return (TRUE);
 	}
-	ft_strarr_clear(cmd.command);
+	free_command(&cmd);
 	return (FALSE);
 }

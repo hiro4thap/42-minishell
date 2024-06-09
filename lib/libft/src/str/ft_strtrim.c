@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 15:20:44 by jhughes           #+#    #+#             */
-/*   Updated: 2024/03/09 00:28:29 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 22:52:54 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ char	*ft_strtrim(char const *s1, char const *s2)
 	int		start;
 	int		end;
 
+	if (s1[0] == '\0')
+		return (ft_strdup(s1));
 	start = 0;
 	while (is_in(s1[start], s2))
 		start++;

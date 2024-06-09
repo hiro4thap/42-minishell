@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 16:11:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/08 16:27:03 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 22:08:11 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,11 +124,9 @@ t_command	parse_command(int id, char *simple_command, t_environment *env)
 	char		*token;
 	t_command	command;
 
-	command.id = id;
+	init_command(&command, id);
 	command.command = malloc((len + 1) * sizeof(char *));
 	i = 0;
-	command.in_redirection = NONE;
-	command.out_redirection = NONE;
 	while (simple_command)
 	{
 		token = get_current_token(simple_command);

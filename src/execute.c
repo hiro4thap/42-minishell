@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 19:24:20 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 21:53:43 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,7 @@ void	handle_pipeline(char **commands, int arrlen, int *pipes,
 	int	pid;
 	int	status;
 
+	status = 0;
 	pid = execute(commands, arrlen, pipes, env);
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))

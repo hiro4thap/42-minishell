@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 19:23:54 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 22:06:49 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,7 @@ typedef enum e_redirection
 
 int			init_environment(t_environment **env,
 				char *shell, char **shell_env);
+void		init_command(t_command *command, int id);
 
 int			get_key_index(t_environment *env, char *key);
 int			add_var(t_environment *env, char *key, char *value);
@@ -146,6 +147,7 @@ int			is_quote(char c);
 int			is_spacetab(char c);
 int			is_anglebracket(char c);
 
+void		free_command(t_command *command);
 int			is_builtin(t_command command);
 int			run_builtin(t_command command, t_environment *env);
 int			process_builtins(char **commands, t_environment *env);
