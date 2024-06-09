@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/08 16:50:23 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 19:23:54 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,13 +108,17 @@ int			remove_var(t_environment *env, char *key);
 const char	*get_value(t_environment *env, char *key);
 
 t_command	parse_command(int id, char *cmd, t_environment *env);
+
 int			is_redirection_one(char *input);
 int			is_inredirection_start(char *input);
 int			is_outredirection_end(char *input);
 int			has_redirection_filename(char *input);
 int			has_command_characters(char *input);
+
 int			is_valid_redirection(char *input, t_environment *env);
-void		commands(char *input, t_environment *envp);
+
+void		handle_pipeline(char **commands, int arrlen, int *pipes,
+				t_environment *env);
 
 char		**split_command(char *command);
 void		run_file(t_command command, t_environment *envp);
@@ -124,6 +128,7 @@ void		dup_in_fds(int pipefd_c[2], t_command command, int index,
 				t_environment *env);
 
 void		set_interactive(int is_interative, t_environment *env);
+
 void		sig_echo_enable(void);
 void		sig_echo_disable(void);
 int			sig_echo_get_status(void);
@@ -134,7 +139,9 @@ void		errprint_exit(char *format, char *fail, t_environment *env,
 char		*trim_quote(char *token);
 char		*replace_substr(char *str, const char *toreplace,
 				const char *replacement);
+
 char		*expand_token(char *token, t_environment *env);
+
 int			is_quote(char c);
 int			is_spacetab(char c);
 int			is_anglebracket(char c);
@@ -142,6 +149,7 @@ int			is_anglebracket(char c);
 int			is_builtin(t_command command);
 int			run_builtin(t_command command, t_environment *env);
 int			process_builtins(char **commands, t_environment *env);
+
 int			builtin_cd(t_command command, t_environment *env);
 int			builtin_echo(int argc, char **args, t_environment *env);
 int			builtin_env(t_environment *env);

@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/08 16:55:54 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 19:24:20 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 /// If file is not found, a message will be displayed
 /// @param command t_command structure to be execute
 /// @param envp environment variable
-void	execute_simple_command(t_command command, t_environment *envp)
+static void	execute_simple_command(t_command command, t_environment *envp)
 {
 	char	*cmd;
 	char	*pwd;
@@ -48,7 +48,7 @@ void	execute_simple_command(t_command command, t_environment *envp)
 /// @param last_command TRUE if last command, FALSE otherwise.
 /// @param pipes Pointer to the array of pipes.
 /// @param env The minishell environment.
-void	child(t_command command, int last_command, int *pipes,
+static void	child(t_command command, int last_command, int *pipes,
 	t_environment *env)
 {
 	if (command.id == 0)
@@ -67,7 +67,7 @@ void	child(t_command command, int last_command, int *pipes,
 /// @param i The index of the current command.
 /// @param num_commands The total number of commands.
 /// @param pipes Pointer to the array of pipes.
-void	parent(int i, int num_commands, int *pipes)
+static void	parent(int i, int num_commands, int *pipes)
 {
 	int	*pipe_in;
 	int	*pipe_out;
@@ -84,27 +84,24 @@ void	parent(int i, int num_commands, int *pipes)
 		close(pipe_out[PIPE_WRITE]);
 }
 
-int	execute(char **commands, int num_commands, t_environment *env)
+static int	execute(char **commands, int num_commands, int *pipes,
+				t_environment *env)
 {
-	int			*pipes;
 	int			pid;
 	t_command	command;
 	int			index;
 
-	pipes = malloc(sizeof(int) * (2 * num_commands));
-	if (!pipes)
-		return (EXIT_NO_MEMORY);
 	index = 0;
 	while (index < num_commands)
 	{
-		command = parse_command(index, commands[index], env);
 		if (pipe(pipes + 2 * index) == -1)
-			exit(EXIT_FAILURE);
+			return (-1);
 		pid = fork();
 		if (pid == -1)
 			exit(EXIT_FAILURE);
 		if (pid == 0)
 		{
+			command = parse_command(index, commands[index], env);
 			if (index != num_commands - 1)
 				child(command, FALSE, pipes, env);
 			else
@@ -112,32 +109,21 @@ int	execute(char **commands, int num_commands, t_environment *env)
 			continue ;
 		}
 		parent(index, num_commands, pipes);
-		free(command.command);
 		index++;
 	}
 	return (pid);
 }
 
-/// @brief split the whole command into chanks by pipelines before execution
-/// @param input the string input through prompt
-/// @param envp TODO:should be replaced by get_value functions
-void	commands(char *input, t_environment *env)
+void	handle_pipeline(char **commands, int arrlen, int *pipes,
+			t_environment *env)
 {
-	char	**commands;
-	int		arrlen;
-	int		pid;
-	int		status;
+	int	pid;
+	int	status;
 
-	commands = split_command(input);
-	arrlen = ft_strarr_len(commands);
-	if ((arrlen == 1 && !process_builtins(commands, env)) || arrlen > 1)
-	{
-		pid = execute(commands, arrlen, env);
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			env->exit_code = WEXITSTATUS(status);
-		while (wait(0) > 0)
-			continue ;
-	}
-	ft_strarr_clear(commands);
+	pid = execute(commands, arrlen, pipes, env);
+	waitpid(pid, &status, 0);
+	if (WIFEXITED(status))
+		env->exit_code = WEXITSTATUS(status);
+	while (wait(0) > 0)
+		continue ;
 }
