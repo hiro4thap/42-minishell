@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 18:22:19 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/09 18:44:26 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,22 +20,29 @@ static void	heredoc_readinput(t_command command, int heredoc_pipe[2])
 {
 	char	*line;
 	char	*input;
+	char	*old_input;
 
-	close(heredoc_pipe[PIPE_READ]);
 	input = NULL;
 	while (TRUE)
 	{
 		line = readline("\001\e[1;32m\002here_doc> \001\e[0m\002");
 		if (!ft_strncmp(line, command.heredoc_eof, ft_strlen(line) + 1))
 			break ;
+		old_input = input;
 		if (!input)
 			input = ft_strjoin(line, "\n");
 		else
-			input = ft_strconcat(input, line, "\n", NULL);
+		{
+			input = ft_strconcat(old_input, line, "\n", NULL);
+			free(old_input);
+		}
+		if (line)
+			free(line);
 	}
+	if (line)
+		free(line);
 	ft_putstr_fd(input, heredoc_pipe[PIPE_WRITE]);
-	close(heredoc_pipe[PIPE_WRITE]);
-	exit(EXIT_SUCCESS);
+	free(input);
 }
 
 /// @brief child process takes input from terminal until it hits the EOF string
@@ -52,7 +59,12 @@ static void	heredoc_in(t_command command)
 	if (pid < -1)
 		exit(EXIT_FAILURE);
 	else if (pid == 0)
+	{
+		close(heredoc_pipe[PIPE_READ]);
 		heredoc_readinput(command, heredoc_pipe);
+		close(heredoc_pipe[PIPE_WRITE]);
+		exit(EXIT_SUCCESS);
+	}
 	else if (0 < pid)
 	{
 		close(heredoc_pipe[PIPE_WRITE]);
