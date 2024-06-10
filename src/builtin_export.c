@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:07 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/28 21:05:22 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/10 16:01:27 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,10 @@ int	valid_identifier(char *str)
 	return (TRUE);
 }
 
+/// @brief Prints all exports from the minishell environment when export is
+/// called without arguments.
+/// @param env The minishell environment.
+/// @return Exit status (EXIT_SUCCESS if success).
 int	export_noargs(t_environment *env)
 {
 	int	index;
@@ -78,6 +82,7 @@ int	builtin_export(t_command command, t_environment *env)
 	char	**cmd;
 	int		index;
 	char	*key;
+	char	*value;
 
 	exit_code = EXIT_SUCCESS;
 	if (ft_strarr_len(command.command) == 1)
@@ -86,16 +91,23 @@ int	builtin_export(t_command command, t_environment *env)
 	while (*cmd)
 	{
 		index = ft_strfind(*cmd, "=");
-		if (!valid_identifier(*cmd))
-			exit_code = error(env, *cmd, "not a valid identifier");
-		else if (index != -1)
+		if (valid_identifier(*cmd))
 		{
-			key = ft_substr(*cmd, 0, index);
+			if (index != -1)
+				key = ft_substr(*cmd, 0, index);
+			else
+				key = ft_strdup(*cmd);
 			if (!key)
 				return (EXIT_NO_MEMORY);
-			set_var(env, key, ft_strchr(*cmd, '=') + 1);
+			value = ft_strchr(*cmd, '=');
+			if (value)
+				set_var(env, key, value + 1);
+			else
+				set_var(env, key, NULL);
 			free(key);
 		}
+		else
+			exit_code = error(env, *cmd, "not a valid identifier");
 		cmd++;
 	}
 	return (exit_code);

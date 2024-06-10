@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:37:06 by jhughes           #+#    #+#             */
-/*   Updated: 2024/06/03 09:48:02 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/10 15:50:58 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,19 @@
 /// found.
 int	get_key_index(t_environment *env, char *key)
 {
-	int	index;
+	const int	key_size = ft_strlen(key);
+	int			index;
 
 	index = 0;
 	while (index < env->size)
 	{
-		if (ft_strncmp(env->envp[index], key, ft_strlen(key)) == 0
-			&& ft_strchr(env->envp[index], '=') == env->envp[index]
-			+ ft_strlen(key))
-			return (index);
-		else
-			index++;
+		if (ft_strncmp(env->envp[index], key, key_size) == 0)
+		{
+			if (env->envp[index][key_size] == '='
+				|| env->envp[index][key_size] == '\0')
+				return (index);
+		}
+		index++;
 	}
 	return (-1);
 }
@@ -45,7 +47,10 @@ int	add_var(t_environment *env, char *key, char *value)
 	char		*var;
 	char		**temp_array;
 
-	var = ft_strconcat(key, "=", value, NULL);
+	if (value)
+		var = ft_strconcat(key, "=", value, NULL);
+	else
+		var = ft_strdup(key);
 	if (!var)
 		return (EXIT_NO_MEMORY);
 	if (env->size == env->max_size)
@@ -78,6 +83,8 @@ int	set_var(t_environment *env, char *key, char *value)
 	index = get_key_index(env, key);
 	if (index == -1)
 		return (add_var(env, key, value));
+	if (!value)
+		return (EXIT_SUCCESS);
 	var = ft_strconcat(key, "=", value, NULL);
 	if (!var)
 		return (EXIT_NO_MEMORY);
@@ -94,26 +101,18 @@ int	remove_var(t_environment *env, char *key)
 {
 	int	index;
 
-	index = 0;
+	index = get_key_index(env, key);
+	if (index == -1)
+		return (EXIT_SUCCESS);
+	free(env->envp[index]);
 	while (index < env->size)
 	{
-		if (ft_strncmp(env->envp[index], key, ft_strlen(key)) == 0
-			&& ft_strchr(env->envp[index], '=') == env->envp[index]
-			+ ft_strlen(key))
-		{
-			free(env->envp[index]);
-			while (index < env->size)
-			{
-				env->envp[index] = env->envp[index + 1];
-				index++;
-			}
-			env->envp[index] = NULL;
-			env->size -= 1;
-		}
-		else
-			index++;
+		env->envp[index] = env->envp[index + 1];
+		index++;
 	}
-	return (0);
+	env->envp[index] = NULL;
+	env->size -= 1;
+	return (EXIT_SUCCESS);
 }
 
 /// @brief Gets the value of the key in the minishell environment, if present.
@@ -122,10 +121,14 @@ int	remove_var(t_environment *env, char *key)
 /// @return Pointer to start of the value. 
 const char	*get_value(t_environment *env, char *key)
 {
-	int	index;
+	int		index;
+	char	*value;
 
 	index = get_key_index(env, key);
-	if (index != -1)
-		return (ft_strchr(env->envp[index], '=') + 1);
-	return (NULL);
+	if (index == -1)
+		return (NULL);
+	value = ft_strchr(env->envp[index], '=');
+	if (!value)
+		return (NULL);
+	return (ft_strchr(env->envp[index], '=') + 1);
 }
