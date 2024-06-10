@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 22:46:22 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/10 13:09:22 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,8 @@ int	main(int argc, char **argv, char **envp)
 	t_environment	*env;
 
 	(void) argc;
-	(void) argv;
 	init_environment(&env, argv[0], envp);
 	using_history();
-	sig_echo_disable();
 	input = NULL;
 	while (TRUE)
 	{

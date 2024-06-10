@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 10:47:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 19:42:43 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/10 13:09:26 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,13 @@ void	set_interactive(int is_interative, t_environment *env)
 	}
 	if (is_interative)
 	{
+		sig_echo_disable();
 		interupt.sa_handler = &signal_interactive;
 		quit.sa_handler = SIG_IGN;
 	}
 	else
 	{
+		sig_echo_enable();
 		interupt.sa_handler = &signal_other;
 		quit.sa_handler = &signal_other;
 	}
