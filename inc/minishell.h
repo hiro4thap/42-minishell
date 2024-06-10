@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 22:06:49 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/10 13:18:42 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ typedef struct s_environment
 	int			max_size;
 	int			exit_code;
 	int			echoctl_was_enabled;
+	const char	*home;
 }	t_environment;
 
 typedef struct s_command
@@ -107,6 +108,10 @@ int			add_var(t_environment *env, char *key, char *value);
 int			set_var(t_environment *env, char *key, char *value);
 int			remove_var(t_environment *env, char *key);
 const char	*get_value(t_environment *env, char *key);
+
+void		get_prompt(t_environment *env, char **input);
+
+void		get_prompt(t_environment *env, char **input);
 
 t_command	parse_command(int id, char *cmd, t_environment *env);
 

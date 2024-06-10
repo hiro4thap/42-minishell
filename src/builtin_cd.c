@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:46:37 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/25 16:19:00 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/03 17:33:13 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,26 @@ static int	update_pwd(t_environment *env)
 	return (exit_code);
 }
 
+/// @brief Handles ~ used in cd commands. Remove if ~ expansion is added.
+/// @param command 
+/// @param env 
+/// @return Exit code of chdir.
+static int	change_home(t_command *command, t_environment *env)
+{
+	int		exit_code;
+	char	*path;
+
+	path = ft_strconcat((char *) env->home, &command->command[1][1], NULL);
+	if (chdir(path) != 0)
+	{
+		exit_code = error(env, path, NULL);
+		free(path);
+		return (exit_code);
+	}
+	free(path);
+	return (EXIT_SUCCESS);
+}
+
 /// @brief Changes the current working directory based on ``path``.
 /// @param env The minishell environment.
 /// @param path The path. Can be absolute (defined from root), or relative
@@ -68,6 +88,7 @@ int	builtin_cd(t_command command, t_environment *env)
 {
 	const int	argc = ft_strarr_len(command.command);
 	const char	*home = get_value(env, "HOME");
+	int			exit_code;
 
 	if (argc > 2)
 		return (error(env, NULL, "too many arguments"));
@@ -80,7 +101,13 @@ int	builtin_cd(t_command command, t_environment *env)
 		update_pwd(env);
 		return (EXIT_SUCCESS);
 	}
-	if (chdir(command.command[1]) != 0)
+	if (env->home && ft_strncmp(command.command[1], "~", 1) == 0)
+	{
+		exit_code = change_home(&command, env);
+		if (exit_code != EXIT_SUCCESS)
+			return (exit_code);
+	}
+	else if (chdir(command.command[1]) != 0)
 		return (error(env, command.command[1], NULL));
 	update_pwd(env);
 	return (EXIT_SUCCESS);

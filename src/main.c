@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/10 13:09:22 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/10 13:16:26 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,10 +79,7 @@ int	main(int argc, char **argv, char **envp)
 	while (TRUE)
 	{
 		set_interactive(TRUE, env);
-		if (env->exit_code)
-			input = readline("\001\e[1;31m\002> \001\e[0m\002");
-		else
-			input = readline("\001\e[1;34m\002> \001\e[0m\002");
+		get_prompt(env, &input);
 		set_interactive(FALSE, env);
 		if (!input)
 			builtin_exit(NULL, env);

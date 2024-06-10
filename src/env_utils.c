@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:37:06 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/29 13:38:16 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/03 09:48:02 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ int	get_key_index(t_environment *env, char *key)
 /// @return Exit code: 0 on success, 1 otherwise.
 int	add_var(t_environment *env, char *key, char *value)
 {
-	const int	size = ft_strarr_len(env->envp);
 	char		*var;
 	char		**temp_array;
 
@@ -60,8 +59,7 @@ int	add_var(t_environment *env, char *key, char *value)
 		env->envp = temp_array;
 		env->max_size += 10;
 	}
-	env->envp[env->size] = env->envp[env->size - 1];
-	env->envp[size - 1] = var;
+	env->envp[env->size] = var;
 	env->size += 1;
 	return (0);
 }
