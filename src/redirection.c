@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 18:44:26 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/10 13:27:01 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	heredoc_readinput(t_command command, int heredoc_pipe[2])
 	input = NULL;
 	while (TRUE)
 	{
-		line = readline("\001\e[1;32m\002here_doc> \001\e[0m\002");
+		line = readline("\001\e[1;35m\002here_doc >\001\e[0m\002 ");
 		if (!ft_strncmp(line, command.heredoc_eof, ft_strlen(line) + 1))
 			break ;
 		old_input = input;
