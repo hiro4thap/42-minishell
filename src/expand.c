@@ -6,7 +6,7 @@
 /*   By: hiono <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 17:53:54 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/05 16:36:16 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/10 15:39:35 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char	*get_var(char *dollar)
 		return (ft_substr(dollar, 0, 2));
 	if (!ft_isalpha(*end) && *end != '_')
 		return (ft_strdup("$"));
-	while (ft_isalpha(*end) || *end == '_')
+	while (ft_isalnum(*end) || *end == '_')
 		end++;
 	return (ft_substr(dollar, 0, end - dollar));
 }
