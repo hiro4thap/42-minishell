@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+         #
+#    By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/19 17:27:27 by jhughes           #+#    #+#              #
-#    Updated: 2024/05/30 18:02:45 by hiono            ###   ########.fr        #
+#    Updated: 2024/06/10 14:17:54 by jhughes          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,30 +54,30 @@ fclean: clean
 re: fclean all
 
 $(NAME): $(O_DEP)
-	ar -rcs $(NAME) $(O_DEP)
+	@ar -rcs $(NAME) $(O_DEP)
 
 $(O_DIR)%.o:  src/io/%.c
 	@mkdir -p $(O_DIR)
-	$(COMPILER) -c $(CFLAGS) $< -o $@
+	@$(COMPILER) -c $(CFLAGS) $< -o $@
 
 $(O_DIR)%.o:  src/io/printf/%.c
 	@mkdir -p $(O_DIR)
-	$(COMPILER) -c $(CFLAGS) $< -o $@
+	@$(COMPILER) -c $(CFLAGS) $< -o $@
 
 $(O_DIR)%.o:  src/lst/%.c
 	@mkdir -p $(O_DIR)
-	$(COMPILER) -c $(CFLAGS) $< -o $@
+	@$(COMPILER) -c $(CFLAGS) $< -o $@
 
 $(O_DIR)%.o:  src/mem/%.c
 	@mkdir -p $(O_DIR)
-	$(COMPILER) -c $(CFLAGS) $< -o $@
+	@$(COMPILER) -c $(CFLAGS) $< -o $@
 
 $(O_DIR)%.o:  src/str/%.c
 	@mkdir -p $(O_DIR)
-	$(COMPILER) -c $(CFLAGS) $< -o $@
+	@$(COMPILER) -c $(CFLAGS) $< -o $@
 
 $(O_DIR)%.o:  src/type/%.c
 	@mkdir -p $(O_DIR)
-	$(COMPILER) -c $(CFLAGS) $< -o $@
+	@$(COMPILER) -c $(CFLAGS) $< -o $@
 
 .PHONY: all clean fclean re
