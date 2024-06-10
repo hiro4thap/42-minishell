@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 15:20:44 by jhughes           #+#    #+#             */
-/*   Updated: 2024/06/09 22:52:54 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/10 14:05:41 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ char	*ft_strtrim(char const *s1, char const *s2)
 	int		start;
 	int		end;
 
-	if (s1[0] == '\0')
+	if (ft_strlen(s1) == 0)
 		return (ft_strdup(s1));
 	start = 0;
 	while (is_in(s1[start], s2))
