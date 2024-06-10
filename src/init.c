@@ -5,11 +5,10 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/10 13:15:25 by jhughes          ###   ########.fr       */
+/*   Created: 2024/06/10 13:34:57 by jhughes           #+#    #+#             */
+/*   Updated: 2024/06/10 13:35:10 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "../inc/minishell.h"
 
