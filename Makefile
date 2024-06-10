@@ -3,12 +3,14 @@ NAME		= minishell
 COMPILER	= cc
 CFLAGS		= -Wall -Wextra -Werror
 INCL		= inc/
+HEADER		= $(addprefix $(INCL), $(addsuffix .h, $(NAME)))
 
 SRC_DIR		= src/
 O_DIR		= obj/
 
 INCL_LIBFT	= lib/libft/includes/
 LINK_LIBFT	= lib/libft/
+LIBFT		= $(LINK_LIBFT)/libft.a
 
 INCL_RL 	= /usr/local/opt/readline/include/
 LINK_RL		= /usr/local/opt/readline/lib
@@ -36,12 +38,16 @@ fclean: clean
 
 re: fclean all
 
-$(NAME): $(O_FILES_DIR)
-	make -C $(LINK_LIBFT)
+$(LIBFT):
+	@echo "Making LIBFT..."
+	@make -C $(LINK_LIBFT)
+	@echo "Done..."
+
+$(NAME): $(LIBFT) $(HEADER) $(O_FILES_DIR)
 	$(COMPILER) $(CFLAGS) -I$(INCL) -I$(INCL_LIBFT) -I$(INCL_RL) $(O_FILES_DIR) $(LIBS) -o $@
 
-$(O_DIR)%.o: $(SRC_DIR)%.c
-	mkdir -p obj/
+$(O_DIR)%.o: $(SRC_DIR)%.c $(HEADER)
+	@mkdir -p obj/
 	$(COMPILER) $(CFLAGS) -I$(INCL) -I$(INCL_LIBFT) -I$(INCL_RL) -c $< -o $@
 
 debug: $(C_FILES_DIR)
