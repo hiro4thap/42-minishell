@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/10 13:18:42 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/11 17:43:27 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,7 @@ void		dup_out_fds(int pipefd_p[2], t_command command, t_environment *env);
 void		dup_in_fds(int pipefd_c[2], t_command command, int index,
 				t_environment *env);
 
+void		set_heredoc(int is_child);
 void		set_interactive(int is_interative, t_environment *env);
 
 void		sig_echo_enable(void);
