@@ -22,7 +22,8 @@ C_FILES		= main.c validation.c execute.c checker.c utils.c parse.c redirection.c
 				builtin_cd.c builtin_echo.c builtin_env.c builtin_exit.c \
 				builtin_export.c builtin_pwd.c builtin_unset.c env_utils.c \
 				signal.c terminal.c execute_utils.c expand.c init.c \
-				execute_builtin.c validation_utils.c
+				execute_builtin.c validation_utils.c execute_simple_command.c \
+				expand_chank.c parse_utils.c get_prompt.c execute_utils2.c
 C_FILES_DIR	= $(addprefix $(SRC_DIR), $(C_FILES)) 
 O_FILES		= $(C_FILES:.c=.o)
 O_FILES_DIR	= $(addprefix $(O_DIR), $(O_FILES))

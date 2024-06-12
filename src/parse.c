@@ -6,67 +6,16 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 16:11:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 10:56:57 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/12 14:14:14 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-/// @brief duplicate the token which is pointed by the param 'ptr'
-/// @param ptr current pointer
-/// @return [MALLOC] a token which can be surrounded by quotes
-char	*get_current_token(char *ptr)
-{
-	char	*ptr_start;
-	char	*token;
-
-	while (is_spacetab(*ptr))
-		ptr++;
-	ptr_start = ptr;
-	if (is_anglebracket(*ptr))
-		ptr = ft_strrchr(ptr, *ptr) + 1;
-	else
-	{
-		while (*ptr && !is_spacetab(*ptr) && !is_anglebracket(*ptr))
-		{
-			if (is_quote(*ptr) && ft_strchr(ptr + 1, *ptr))
-				ptr = ft_strchr(ptr + 1, *ptr);
-			ptr++;
-		}
-	}
-	token = ft_substr(ptr_start, 0, ptr - ptr_start);
-	return (token);
-}
-
-/// @brief search the next token within a simple command
-/// @param ptr current pointer
-/// @return pointer which points to the first character of next token
-char	*point_next_token(char *ptr)
-{
-	while (is_spacetab(*ptr))
-		ptr++;
-	if (is_anglebracket(*ptr))
-		ptr = ft_strrchr(ptr, *ptr) + 1;
-	else
-	{
-		while (*ptr && !is_spacetab(*ptr) && !is_anglebracket(*ptr))
-		{
-			if (is_quote(*ptr) && ft_strchr(ptr + 1, *ptr))
-				ptr = ft_strchr(ptr + 1, *ptr);
-			ptr++;
-		}
-	}
-	while (is_spacetab(*ptr))
-		ptr++;
-	if (!*ptr)
-		return (NULL);
-	return (ptr);
-}
-
 /// @brief count the numebr of command strings
 /// @param simple_command a command split by pipeline
 /// @return the number of command strings (command + arguments + options)
-int	count_command(char *simple_command)
+static int	count_command(char *simple_command)
 {
 	int	i;
 
@@ -91,7 +40,7 @@ int	count_command(char *simple_command)
 /// @param simple_command a command split by pipeline
 /// @param command t_struct instance to store data on redirection
 /// @return command which is updated on redirection
-t_command	*handle_redirections(
+static t_command	*handle_redirections(
 		char *token, char *simple_command, t_command *command)
 {
 	char	*redirection_argument;
@@ -120,6 +69,25 @@ t_command	*handle_redirections(
 	return (command);
 }
 
+static int	free_vars(char **command, char *token, int exit_code)
+{
+	ft_strarr_clear(command);
+	free(token);
+	return (exit_code);
+}
+
+static int	handle_anglebracket(char *token, char **simple_command,
+				t_command **command)
+{
+	if (is_anglebracket(*token))
+	{
+		*command = handle_redirections(token, *simple_command, *command);
+		*simple_command = point_next_token(*simple_command);
+		return (TRUE);
+	}
+	return (FALSE);
+}
+
 /// @brief parse a simple command by splitting it into tokens
 /// @param simple_command a command split by pipeline
 /// @return [MALLOC] t_command instance with parameters filled
@@ -138,20 +106,11 @@ int	parse_command(int id, char *simple_command, t_environment *env,
 	while (simple_command)
 	{
 		token = get_current_token(simple_command);
-		if (is_anglebracket(*token))
-		{
-			command = handle_redirections(token, simple_command, command);
-			simple_command = point_next_token(simple_command);
-		}
-		else
+		if (!handle_anglebracket(token, &simple_command, &command))
 		{
 			command->command[i++] = expand_token(token, env);
 			if (!command->command[i - 1])
-			{
-				ft_strarr_clear(command->command);
-				free(token);
-				return (EXIT_NO_MEMORY);
-			}
+				return (free_vars(command->command, token, EXIT_NO_MEMORY));
 		}
 		free(token);
 		simple_command = point_next_token(simple_command);

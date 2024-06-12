@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 14:24:18 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:33:22 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,4 +168,12 @@ int			builtin_export(t_command command, t_environment *env);
 int			builtin_pwd(t_environment *env);
 int			builtin_unset(t_command command, t_environment *env);
 
+void		execute_simple_command(t_command command, t_environment *envp);
+
+char		*expand_chank(char *chank, t_environment *env);
+
+char		*get_current_token(char *ptr);
+char		*point_next_token(char *ptr);
+
+char		**split_command(char *command);
 #endif

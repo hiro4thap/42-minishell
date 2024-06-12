@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 13:34:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/06/12 10:56:47 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/12 14:21:20 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,15 +98,4 @@ int	init_environment(t_environment **env, char *shell, char **shell_env)
 	}
 	(*env)->envp[index] = NULL;
 	return (check_vars(*env));
-}
-
-void	init_command(t_command *command, int id)
-{
-	command->id = id;
-	command->command = NULL;
-	command->in_redirection = NONE;
-	command->out_redirection = NONE;
-	command->heredoc_eof = NULL;
-	command->in_file = NULL;
-	command->out_file = NULL;
 }
