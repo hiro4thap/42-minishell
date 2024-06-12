@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 13:12:27 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/12 15:37:51 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,22 @@ static int	execute(char **commands, int num_commands, int *pipes,
 	return (pid);
 }
 
+static void	handle_exit(int status, t_environment *env)
+{
+	if (WIFEXITED(status))
+		env->exit_code = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+	{
+		env->exit_code = 128 + WTERMSIG(status);
+		if (WTERMSIG(status) == SIGQUIT)
+		{
+			ft_putstr_fd("Quit: ", STDOUT_FILENO);
+			ft_putnbr_fd(SIGQUIT, STDOUT_FILENO);
+		}
+		ft_putchar_fd('\n', STDOUT_FILENO);
+	}
+}
+
 int	handle_pipeline(char **commands, int arrlen, int *pipes,
 			t_environment *env)
 {
@@ -107,8 +123,7 @@ int	handle_pipeline(char **commands, int arrlen, int *pipes,
 	else if (pid == -3)
 		return (EXIT_NO_MEMORY);
 	waitpid(pid, &status, 0);
-	if (WIFEXITED(status))
-		env->exit_code = WEXITSTATUS(status);
+	handle_exit(status, env);
 	while (wait(0) > 0)
 		continue ;
 	return (EXIT_SUCCESS);

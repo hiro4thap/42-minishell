@@ -6,24 +6,13 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 10:47:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 10:08:24 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 15:41:36 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
 int	g_sig_num = 0;
-
-static void	signal_other(int signal)
-{
-	if (signal == SIGQUIT)
-	{
-		ft_putstr_fd("Quit: ", STDOUT_FILENO);
-		ft_putnbr_fd(SIGQUIT, STDOUT_FILENO);
-	}
-	ft_putchar_fd('\n', STDOUT_FILENO);
-	g_sig_num = signal;
-}
 
 static void	signal_interactive(int signal)
 {
@@ -33,7 +22,7 @@ static void	signal_interactive(int signal)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-		g_sig_num = -SIGINT;
+		g_sig_num = SIGINT;
 	}
 }
 
@@ -62,10 +51,7 @@ void	set_interactive(int is_interative, t_environment *env)
 
 	if (g_sig_num)
 	{
-		if (g_sig_num > 0)
-			env->exit_code = 128 + g_sig_num;
-		else if (g_sig_num == -SIGINT)
-			env->exit_code = EXIT_FAILURE;
+		env->exit_code = EXIT_FAILURE;
 		g_sig_num = 0;
 	}
 	if (is_interative)
@@ -78,8 +64,8 @@ void	set_interactive(int is_interative, t_environment *env)
 	else
 	{
 		sig_echo_enable();
-		sa_interupt = &signal_other;
-		sa_quit = &signal_other;
+		sa_interupt = SIG_IGN;
+		sa_quit = SIG_IGN;
 	}
 	set_signals(sa_interupt, sa_quit);
 }
