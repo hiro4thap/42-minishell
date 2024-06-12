@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/11 21:50:17 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/12 14:24:18 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,6 @@ int			is_quote(char c);
 int			is_spacetab(char c);
 int			is_anglebracket(char c);
 
-void		free_command(t_command *command);
 int			is_builtin(t_command command);
 int			run_builtin(t_command command, t_environment *env);
 int			process_builtins(char **commands, t_environment *env);

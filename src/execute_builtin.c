@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   execute_builtin.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:27:47 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/11 19:30:17 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/12 14:00:32 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-void	free_command(t_command *command)
+static int	free_command(t_command *command, int exit_code)
 {
 	ft_strarr_clear(command->command);
 	if (command->in_file)
@@ -21,6 +21,7 @@ void	free_command(t_command *command)
 		free(command->out_file);
 	if (command->heredoc_eof)
 		free(command->heredoc_eof);
+	return (exit_code);
 }
 
 int	is_builtin(t_command command)
@@ -68,25 +69,19 @@ int	process_builtins(char **commands, t_environment *env)
 	if (exit_code)
 		return (exit_code);
 	if (!cmd.command[0])
-	{
-		free_command(&cmd);
-		return (FALSE);
-	}
+		return (free_command(&cmd, FALSE));
 	if (ft_strncmp(cmd.command[0], "exit", 5) == 0)
 	{
 		ft_putendl_fd("exit", STDERR_FILENO);
 		env->exit_code = builtin_exit(&cmd, env);
-		free_command(&cmd);
-		return (TRUE);
+		return (free_command(&cmd, TRUE));
 	}
 	else if (ft_strncmp(cmd.command[0], "export", 7) == 0
 		|| ft_strncmp(cmd.command[0], "unset", 6) == 0
 		|| ft_strncmp(cmd.command[0], "cd", 3) == 0)
 	{
 		env->exit_code = run_builtin(cmd, env);
-		free_command(&cmd);
-		return (TRUE);
+		return (free_command(&cmd, TRUE));
 	}
-	free_command(&cmd);
-	return (FALSE);
+	return (free_command(&cmd, FALSE));
 }

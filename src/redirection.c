@@ -6,11 +6,23 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 10:58:53 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/12 13:20:22 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+
+/// @brief Redirects ``std_fd`` to ``new_fd`` then closes ``new_fd``.
+/// @param new_fd The file descriptor to use insted of STDIO. 
+/// @param std_fd STDOUT_FILENO or STDIN_FILENO.
+/// @return EXIT_SUCCESS, or EXIT_DUP_FAILURE if dup2 fails.
+static int	redirect_io(int new_fd, int std_fd)
+{
+	if (dup2(new_fd, std_fd) == -1)
+		return (EXIT_DUP_FAILURE);
+	close(new_fd);
+	return (EXIT_SUCCESS);
+}
 
 /// @brief A child process that handles reading input for heredoc, piping it to
 /// the parent's STDIN.
@@ -36,7 +48,7 @@ static void	heredoc_readinput(t_command command, int heredoc_pipe[2])
 /// @brief child process takes input from terminal until it hits the EOF string
 /// and passes it to the pipe so that command can take it as input
 /// @param command t_command structure which includs the EOF string
-static int	heredoc_in(t_command command, t_environment *env)
+static int	heredoc_in(t_command command)
 {
 	int		heredoc_pipe[2];
 	int		pid;
@@ -61,7 +73,6 @@ static int	heredoc_in(t_command command, t_environment *env)
 		close(heredoc_pipe[PIPE_READ]);
 		while (wait(0) > 0)
 			continue ;
-		set_interactive(FALSE, env);
 	}
 	return (EXIT_SUCCESS);
 }
@@ -78,12 +89,7 @@ int	dup_in_fds(int pipe_in[2], t_command command, int index,
 	int		in_fd;
 
 	if (0 < index)
-	{
-		if (dup2(pipe_in[PIPE_READ], STDIN_FILENO) == -1)
-			return (EXIT_DUP_FAILURE);
-		close(pipe_in[PIPE_READ]);
-		return (EXIT_SUCCESS);
-	}
+		return (redirect_io(pipe_in[PIPE_READ], STDIN_FILENO));
 	else if (command.in_redirection == SINGLE_IN)
 	{
 		if (access(command.in_file, F_OK))
@@ -100,7 +106,7 @@ int	dup_in_fds(int pipe_in[2], t_command command, int index,
 		close(in_fd);
 	}
 	else if (command.in_redirection == DOUBLE_IN)
-		heredoc_in(command, env);
+		heredoc_in(command);
 	return (EXIT_SUCCESS);
 }
 
@@ -116,10 +122,7 @@ int	dup_out_fds(int pipe_out[2], t_command command, t_environment *env)
 	if (pipe_out)
 	{
 		close(pipe_out[PIPE_READ]);
-		if (dup2(pipe_out[PIPE_WRITE], STDOUT_FILENO) == -1)
-			return (EXIT_DUP_FAILURE);
-		close(pipe_out[PIPE_WRITE]);
-		return (EXIT_SUCCESS);
+		return (redirect_io(pipe_out[PIPE_WRITE], STDOUT_FILENO));
 	}
 	if (command.out_redirection == NONE)
 		return (EXIT_SUCCESS);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/28 15:13:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/11 22:00:14 by hiono            ###   ########.fr       */
+/*   Updated: 2024/06/12 14:21:47 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,44 +87,50 @@ char	**split_command(char *command)
 	return (simple_commands);
 }
 
-void	run_file(t_command command, t_environment *envp)
+static char	**get_directories(t_environment *env)
 {
-	char	*path;
 	char	**dirs;
-	char	*cmd;
-	int		i;
+	char	*path;
 
-	if (get_value(envp, "PATH"))
-		path = ft_strdup(get_value(envp, "PATH"));
+	if (get_value(env, "PATH"))
+		path = ft_strdup(get_value(env, "PATH"));
 	else
 		path = getcwd(NULL, 0);
 	if (!path)
 	{
-		perror(envp->shell);
+		perror(env->shell);
 		exit(EXIT_FAILURE);
 	}
 	dirs = ft_split(path, ':');
+	free(path);
+	return (dirs);
+}
+
+void	run_file(t_command command, t_environment *env)
+{
+	char	**dirs;
+	char	*cmd;
+	int		index;
+
+	dirs = get_directories(env);
 	if (!dirs)
 	{
-		free(path);
-		perror(envp->shell);
+		perror(env->shell);
 		exit(EXIT_FAILURE);
 	}
-	i = 0;
-	while (dirs[i])
+	index = 0;
+	while (dirs[index])
 	{
-		cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
+		cmd = ft_strconcat(dirs[index], "/", command.command[0], NULL);
 		if (!cmd)
 		{
-			free(path);
+			perror(env->shell);
 			ft_strarr_clear(dirs);
-			perror(envp->shell);
 			exit(EXIT_FAILURE);
 		}
-		execve(cmd, command.command, envp->envp);
+		execve(cmd, command.command, env->envp);
 		free(cmd);
-		i++;
+		index += 1;
 	}
-	free(path);
 	ft_strarr_clear(dirs);
 }
