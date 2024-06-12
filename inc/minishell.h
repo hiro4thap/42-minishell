@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 09:26:37 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 09:41:29 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,14 @@ struct termios
 /// @brief The minishell environment
 typedef struct s_environment
 {
-	const char	*shell;
-	char		**envp;
-	int			size;
-	int			max_size;
-	int			exit_code;
-	int			echoctl_was_enabled;
-	const char	*home;
+	const char		*shell;
+	char			**envp;
+	int				size;
+	int				max_size;
+	int				exit_code;
+	int				echoctl_was_enabled;
+	const char		*home;
+	struct termios	init_state;
 }	t_environment;
 
 typedef struct s_command

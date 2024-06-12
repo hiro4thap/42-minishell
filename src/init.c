@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 13:34:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/06/10 13:35:10 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 09:42:37 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ static void	init_terminal(t_environment *env, char *shell)
 	env->exit_code = EXIT_SUCCESS;
 	env->echoctl_was_enabled = sig_echo_get_status();
 	env->home = getenv("HOME");
+	tcgetattr(0, &env->init_state);
 }
 
 /// @brief Initialises environment from the calling shells environment.

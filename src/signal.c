@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 10:47:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 09:29:10 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 09:43:38 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ void	set_interactive(int is_interative, t_environment *env)
 	}
 	if (is_interative)
 	{
+		tcsetattr(0, 0, &env->init_state);
 		sig_echo_disable();
 		interupt.sa_handler = &signal_interactive;
 		quit.sa_handler = SIG_IGN;

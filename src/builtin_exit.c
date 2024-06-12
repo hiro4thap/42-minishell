@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:08:57 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/29 14:34:48 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 09:45:39 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,7 @@ int	builtin_exit(t_command *command, t_environment *env)
 	}
 	else
 		ft_putendl_fd("exit", STDERR_FILENO);
-	if (env->echoctl_was_enabled)
-		sig_echo_enable();
-	else
-		sig_echo_disable();
+	tcsetattr(0, 0, &env->init_state);
 	ft_strarr_clear(env->envp);
 	if (command)
 		ft_strarr_clear(command->command);
