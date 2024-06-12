@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 10:47:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 09:43:38 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 10:08:24 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,26 +37,29 @@ static void	signal_interactive(int signal)
 	}
 }
 
-void	set_child(void)
+static void	set_signals(void (*sa_interupt)(int), void (*sa_quit)(int))
 {
 	struct sigaction	interupt;
 	struct sigaction	quit;
 
 	ft_memset(&interupt, 0, sizeof(interupt));
 	ft_memset(&quit, 0, sizeof(quit));
-	interupt.sa_handler = SIG_DFL;
-	quit.sa_handler = SIG_DFL;
+	interupt.sa_handler = sa_interupt;
+	quit.sa_handler = sa_quit;
 	sigaction(SIGINT, &interupt, NULL);
 	sigaction(SIGQUIT, &quit, NULL);
 }
 
+void	set_child(void)
+{
+	set_signals(SIG_DFL, SIG_DFL);
+}
+
 void	set_interactive(int is_interative, t_environment *env)
 {
-	struct sigaction	interupt;
-	struct sigaction	quit;
+	void	(*sa_interupt)(int);
+	void	(*sa_quit)(int);
 
-	ft_memset(&interupt, 0, sizeof(interupt));
-	ft_memset(&quit, 0, sizeof(quit));
 	if (g_sig_num)
 	{
 		if (g_sig_num > 0)
@@ -69,15 +72,14 @@ void	set_interactive(int is_interative, t_environment *env)
 	{
 		tcsetattr(0, 0, &env->init_state);
 		sig_echo_disable();
-		interupt.sa_handler = &signal_interactive;
-		quit.sa_handler = SIG_IGN;
+		sa_interupt = &signal_interactive;
+		sa_quit = SIG_IGN;
 	}
 	else
 	{
 		sig_echo_enable();
-		interupt.sa_handler = &signal_other;
-		quit.sa_handler = &signal_other;
+		sa_interupt = &signal_other;
+		sa_quit = &signal_other;
 	}
-	sigaction(SIGINT, &interupt, NULL);
-	sigaction(SIGQUIT, &quit, NULL);
+	set_signals(sa_interupt, sa_quit);
 }
