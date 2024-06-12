@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:07 by jhughes           #+#    #+#             */
-/*   Updated: 2024/06/10 16:01:27 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 11:43:41 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,16 +57,56 @@ int	valid_identifier(char *str)
 /// called without arguments.
 /// @param env The minishell environment.
 /// @return Exit status (EXIT_SUCCESS if success).
-int	export_noargs(t_environment *env)
+static int	export_noargs(t_environment *env)
 {
-	int	index;
+	int		index;
+	char	*value;
+	int		count;
 
 	index = 0;
 	while (index < env->size)
 	{
 		ft_putstr_fd("declare -x ", STDOUT_FILENO);
-		ft_putendl_fd(env->envp[index++], STDOUT_FILENO);
+		value = ft_strchr(env->envp[index], '=');
+		if (value)
+		{
+			count = 0;
+			while (env->envp[index][count] != '=')
+				count += 1;
+			write(STDOUT_FILENO, env->envp[index], count);
+			ft_putstr_fd("=\"", STDOUT_FILENO);
+			ft_putstr_fd(value + 1, STDOUT_FILENO);
+			ft_putendl_fd("\"", STDOUT_FILENO);
+		}
+		else
+			ft_putendl_fd(env->envp[index], STDOUT_FILENO);
+		index++;
 	}
+	return (EXIT_SUCCESS);
+}
+
+/// @brief Processes an argument, adding it to env appropriately based on if it
+/// has a key and/or a value.
+/// @param arg The argument string to process.
+/// @param env The minishell environment.
+/// @return Exit code: EXIT_SUCCESS, or EXIT_NO_MEMORY if malloc error
+static int	process_arg(char *arg, int index, t_environment *env)
+{
+	char	*key;
+	char	*value;
+
+	if (index != -1)
+		key = ft_substr(arg, 0, index);
+	else
+		key = ft_strdup(arg);
+	if (!key)
+		return (EXIT_NO_MEMORY);
+	value = ft_strchr(arg, '=');
+	if (value)
+		set_var(env, key, value + 1);
+	else
+		set_var(env, key, NULL);
+	free(key);
 	return (EXIT_SUCCESS);
 }
 
@@ -81,8 +121,6 @@ int	builtin_export(t_command command, t_environment *env)
 	int		exit_code;
 	char	**cmd;
 	int		index;
-	char	*key;
-	char	*value;
 
 	exit_code = EXIT_SUCCESS;
 	if (ft_strarr_len(command.command) == 1)
@@ -93,18 +131,8 @@ int	builtin_export(t_command command, t_environment *env)
 		index = ft_strfind(*cmd, "=");
 		if (valid_identifier(*cmd))
 		{
-			if (index != -1)
-				key = ft_substr(*cmd, 0, index);
-			else
-				key = ft_strdup(*cmd);
-			if (!key)
+			if (process_arg(*cmd, index, env) == EXIT_NO_MEMORY)
 				return (EXIT_NO_MEMORY);
-			value = ft_strchr(*cmd, '=');
-			if (value)
-				set_var(env, key, value + 1);
-			else
-				set_var(env, key, NULL);
-			free(key);
 		}
 		else
 			exit_code = error(env, *cmd, "not a valid identifier");
