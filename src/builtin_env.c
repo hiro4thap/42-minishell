@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 09:38:44 by jhughes           #+#    #+#             */
-/*   Updated: 2024/05/25 09:57:27 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/10 15:52:54 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,10 @@ int	builtin_env(t_environment *env)
 
 	index = 0;
 	while (index < env->size)
-		ft_putendl_fd(env->envp[index++], STDOUT_FILENO);
+	{
+		if (ft_strfind(env->envp[index], "=") > 0)
+			ft_putendl_fd(env->envp[index], STDOUT_FILENO);
+		index++;
+	}
 	return (EXIT_SUCCESS);
 }
