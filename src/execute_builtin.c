@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 13:27:47 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 22:03:27 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/11 19:30:17 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,11 @@ int	run_builtin(t_command command, t_environment *env)
 int	process_builtins(char **commands, t_environment *env)
 {
 	t_command	cmd;
+	int			exit_code;
 
-	cmd = parse_command(0, *commands, env);
+	exit_code = parse_command(0, *commands, env, &cmd);
+	if (exit_code)
+		return (exit_code);
 	if (!cmd.command[0])
 	{
 		free_command(&cmd);

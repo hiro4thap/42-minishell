@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:44:59 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 09:41:29 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/11 21:50:17 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,9 @@ struct termios
 # define EXIT_COMMAND_NOT_EXIST 127
 # define EXIT_IMPROPER_BUILTIN_USAGE 2
 # define EXIT_NO_MEMORY 3
+# define EXIT_PIPE_FAILURE -1
+# define EXIT_FORK_FAILURE -2
+# define EXIT_DUP_FAILURE -3
 # define EXIT_OUT_OF_RANGE 255
 
 # define TRUE 1
@@ -86,7 +89,7 @@ typedef struct s_command
 	int		in_redirection;		//0:none 1:< 2:<<
 	char	*in_file;
 	int		out_redirection;	//0:none 1:> 2:>>
-	char	*out_file;	
+	char	*out_file;
 	char	*heredoc_eof;
 	char	**command;
 }	t_command;
@@ -110,11 +113,10 @@ int			set_var(t_environment *env, char *key, char *value);
 int			remove_var(t_environment *env, char *key);
 const char	*get_value(t_environment *env, char *key);
 
-void		get_prompt(t_environment *env, char **input);
+int			get_prompt(t_environment *env, char **input);
 
-void		get_prompt(t_environment *env, char **input);
-
-t_command	parse_command(int id, char *cmd, t_environment *env);
+int			parse_command(int id, char *cmd, t_environment *env,
+				t_command *command);
 
 int			is_redirection_one(char *input);
 int			is_inredirection_start(char *input);
@@ -124,14 +126,14 @@ int			has_command_characters(char *input);
 
 int			is_valid_redirection(char *input, t_environment *env);
 
-void		handle_pipeline(char **commands, int arrlen, int *pipes,
+int			handle_pipeline(char **commands, int arrlen, int *pipes,
 				t_environment *env);
 
 char		**split_command(char *command);
 void		run_file(t_command command, t_environment *envp);
 
-void		dup_out_fds(int pipefd_p[2], t_command command, t_environment *env);
-void		dup_in_fds(int pipefd_c[2], t_command command, int index,
+int			dup_out_fds(int pipefd_p[2], t_command command, t_environment *env);
+int			dup_in_fds(int pipefd_c[2], t_command command, int index,
 				t_environment *env);
 
 void		set_child(void);

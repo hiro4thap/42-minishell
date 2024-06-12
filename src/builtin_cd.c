@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:46:37 by jhughes           #+#    #+#             */
-/*   Updated: 2024/06/03 17:33:13 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 10:56:42 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,14 @@ static int	error(t_environment *env, const char *path, const char *error)
 	if (!message)
 	{
 		perror("minishell: cd");
-		exit(EXIT_FAILURE);
+		return (EXIT_NO_MEMORY);
 	}
 	if (!error)
 		perror(message);
 	else
 	{
-		message = ft_strjoin(message, error);
-		ft_putendl_fd(message, STDERR_FILENO);
+		ft_putstr_fd(message, STDERR_FILENO);
+		ft_putendl_fd((char *) error, STDERR_FILENO);
 	}
 	free(message);
 	return (EXIT_FAILURE);
@@ -69,6 +69,8 @@ static int	change_home(t_command *command, t_environment *env)
 	char	*path;
 
 	path = ft_strconcat((char *) env->home, &command->command[1][1], NULL);
+	if (!path)
+		return (EXIT_NO_MEMORY);
 	if (chdir(path) != 0)
 	{
 		exit_code = error(env, path, NULL);
@@ -98,8 +100,8 @@ int	builtin_cd(t_command command, t_environment *env)
 			return (error(env, NULL, "HOME not set"));
 		if (chdir(home) != 0)
 			return (error(env, home, NULL));
-		update_pwd(env);
-		return (EXIT_SUCCESS);
+		exit_code = update_pwd(env);
+		return (exit_code);
 	}
 	if (env->home && ft_strncmp(command.command[1], "~", 1) == 0)
 	{
@@ -109,6 +111,6 @@ int	builtin_cd(t_command command, t_environment *env)
 	}
 	else if (chdir(command.command[1]) != 0)
 		return (error(env, command.command[1], NULL));
-	update_pwd(env);
-	return (EXIT_SUCCESS);
+	exit_code = update_pwd(env);
+	return (exit_code);
 }

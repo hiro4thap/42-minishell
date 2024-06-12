@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:37:06 by jhughes           #+#    #+#             */
-/*   Updated: 2024/06/10 15:50:58 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 10:56:45 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /// @brief Searches the minishell environment for the specified key.
 /// @param env The minishell environment.
 /// @param key The key being searched for.
-/// @return Position index of key in minishell environment array, -1 if not 
+/// @return Position index of key in minishell environment array, -1 if not
 /// found.
 int	get_key_index(t_environment *env, char *key)
 {
@@ -37,7 +37,7 @@ int	get_key_index(t_environment *env, char *key)
 }
 
 /// @brief Adds a new key/value pair to the minishell environment.
-/// Resizes the environment variable if necessary. 
+/// Resizes the environment variable if necessary.
 /// @param env The minishell environment.
 /// @param key The key to be added.
 /// @param value The value to set with the new key.
@@ -74,7 +74,7 @@ int	add_var(t_environment *env, char *key, char *value)
 /// @param env The minishell environment.
 /// @param key The key to be set.
 /// @param value The value to set in the key.
-/// @return Exit code: 0 on success, 1 otherwise.
+/// @return Exit code: 0 on success, 1 otherwise. 3 on malloc failure.
 int	set_var(t_environment *env, char *key, char *value)
 {
 	char	*var;
@@ -118,7 +118,7 @@ int	remove_var(t_environment *env, char *key)
 /// @brief Gets the value of the key in the minishell environment, if present.
 /// @param env The minishell environment.
 /// @param key The key to find the value of.
-/// @return Pointer to start of the value. 
+/// @return Pointer to start of the value.
 const char	*get_value(t_environment *env, char *key)
 {
 	int		index;

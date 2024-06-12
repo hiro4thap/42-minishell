@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 12:45:07 by jhughes           #+#    #+#             */
-/*   Updated: 2024/06/12 11:43:41 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 10:56:44 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 /// @param env The minishell environment, to get the shell name.
 /// @param path The command or path used to cause an error.
 /// @param error The error message to display.
-/// @return 
+/// @return
 static int	error(t_environment *env, const char *path, const char *error)
 {
 	ft_putstr_fd((char *) env->shell, STDERR_FILENO);
@@ -27,7 +27,7 @@ static int	error(t_environment *env, const char *path, const char *error)
 	return (EXIT_FAILURE);
 }
 
-/// @brief Determines if a key is valid: only contains letters, numbers, and 
+/// @brief Determines if a key is valid: only contains letters, numbers, and
 /// underscore. Cannot start with a number.
 /// @param str The key to check.
 /// @return 1 if valid, 0 otherwise.
@@ -115,7 +115,7 @@ static int	process_arg(char *arg, int index, t_environment *env)
 /// @param env The minishell environment.
 /// @param key_value The key/value pair to add/set in the environment.
 /// @return Exit code:
-/// 0 on success. 1 if set_var failed.  2 if malloc failed.
+/// 0 on success. 1 if set_var failed.  3 if malloc failed.
 int	builtin_export(t_command command, t_environment *env)
 {
 	int		exit_code;

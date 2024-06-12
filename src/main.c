@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 18:45:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/10 13:16:26 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 10:56:05 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,52 +15,61 @@
 /// @brief split the whole command into chanks by pipelines before execution
 /// @param input the string input through prompt
 /// @param env	the Minishell environment.
-static void	commands(char *input, t_environment *env)
+static int	commands(char *input, t_environment *env)
 {
 	char	**commands;
 	int		arrlen;
 	int		*pipes;
+	int		exit_code;
 
 	commands = split_command(input);
+	if (!commands)
+		return (EXIT_NO_MEMORY);
 	arrlen = ft_strarr_len(commands);
 	pipes = malloc(sizeof(int) * (2 * arrlen));
+	exit_code = EXIT_SUCCESS;
 	if (!pipes)
 	{
 		ft_strarr_clear(commands);
-		env->exit_code = EXIT_NO_MEMORY;
-		return ;
+		return (EXIT_NO_MEMORY);
 	}
-	else if ((arrlen == 1 && !process_builtins(commands, env)) || arrlen > 1)
+	if (arrlen == 1)
+		exit_code = process_builtins(commands, env);
+	if (exit_code)
 	{
-		handle_pipeline(commands, arrlen, pipes, env);
+		ft_strarr_clear(commands);
+		free(pipes);
+		return (exit_code);
 	}
+	if (!exit_code || arrlen > 1)
+		exit_code = handle_pipeline(commands, arrlen, pipes, env);
 	ft_strarr_clear(commands);
 	free(pipes);
+	return (exit_code);
 }
 
 static int	handle_input(char *input, t_environment *env)
 {
 	char	*trimmed_input;
+	int		exit_code;
 
 	if (!input)
 		return (0);
 	trimmed_input = ft_strtrim(input, " \t");
 	if (!trimmed_input)
 	{
-		ft_putstr_fd("fail to malloc\n", STDERR_FILENO);
 		free(input);
-		return (0);
+		return (EXIT_NO_MEMORY);
 	}
 	if (*trimmed_input)
 		add_history(input);
 	if (!is_valid_redirection(trimmed_input, env))
-	{
-		free(input);
 		return (0);
-	}
 	if (*trimmed_input)
 	{
-		commands(trimmed_input, env);
+		exit_code = commands(trimmed_input, env);
+		if (exit_code)
+			return (exit_code);
 		rl_on_new_line();
 	}
 	free(trimmed_input);
@@ -70,22 +79,39 @@ static int	handle_input(char *input, t_environment *env)
 int	main(int argc, char **argv, char **envp)
 {
 	char			*input;
+	t_environment	tenv;
 	t_environment	*env;
+	int				result;
 
 	(void) argc;
-	init_environment(&env, argv[0], envp);
+	env = &tenv;
+	if (init_environment(&env, argv[0], envp))
+		exit(EXIT_FAILURE);
 	using_history();
 	input = NULL;
 	while (TRUE)
 	{
 		set_interactive(TRUE, env);
-		get_prompt(env, &input);
+		if (get_prompt(env, &input))
+		{
+			ft_strarr_clear(env->envp);
+			exit(EXIT_FAILURE);
+		}
 		set_interactive(FALSE, env);
 		if (!input)
 			builtin_exit(NULL, env);
-		if (!handle_input(input, env))
-			continue ;
+		result = handle_input(input, env);
 		free(input);
+		if (result == EXIT_NO_MEMORY
+			|| result == EXIT_PIPE_FAILURE
+			|| result == EXIT_FORK_FAILURE)
+		{
+			perror(env->shell);
+			ft_strarr_clear(env->envp);
+			exit(EXIT_FAILURE);
+		}
+		else if (result)
+			continue ;
 	}
 	return (EXIT_SUCCESS);
 }

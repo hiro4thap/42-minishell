@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 12:37:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/10 13:17:28 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 11:55:14 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ char	*trim_quote(char *token)
 {
 	int		len;
 
+	if (!token)
+		return (NULL);
 	len = ft_strlen(token);
 	if (len == 1)
 		return (ft_strdup(token));
@@ -60,6 +62,7 @@ void	errprint_exit(char *format, char *fail, t_environment *env,
 	exit(1);
 }
 
+//[MALLOC]
 char	*replace_substr(char *str, const char *toreplace,
 			const char *replacement)
 {
@@ -76,6 +79,8 @@ char	*replace_substr(char *str, const char *toreplace,
 	{
 		len = ft_strlen(str) - ft_strlen(toreplace) + ft_strlen(replacement);
 		newstr = malloc(len + 1);
+		if (!newstr)
+			return (NULL);
 		memcpy(newstr, str, pos - str);
 		memcpy(newstr + (pos - str), replacement, ft_strlen(replacement));
 		memcpy(newstr + (pos - str) + ft_strlen(replacement),
@@ -105,11 +110,22 @@ static char	*get_directory(char *path)
 	return (ft_strdup(str));
 }
 
+static int	free_vars(void *ptr1, void *ptr2, void *ptr3, int exit_code)
+{
+	if (ptr1)
+		free(ptr1);
+	if (ptr2)
+		free(ptr2);
+	if (ptr3)
+		free(ptr3);
+	return (exit_code);
+}
+
 /// @brief Calls readline, formatting the prompt with the current directory, and
 ///  sets the result into 'input'.
 /// @param env The minishell environment.
 /// @param[out] input The output of readline. 
-void	get_prompt(t_environment *env, char **input)
+int	get_prompt(t_environment *env, char **input)
 {
 	char	*path;
 	char	*dir;
@@ -117,19 +133,23 @@ void	get_prompt(t_environment *env, char **input)
 	char	*prompt;
 
 	path = getcwd(NULL, 0);
+	if (!path)
+		return (EXIT_NO_MEMORY);
 	if (env->home
 		&& (ft_strncmp(path, env->home, ft_strlen(env->home) + 1)) == 0)
 		dir = ft_strdup("~");
 	else
 		dir = get_directory(path);
+	if (!dir)
+		return (free_vars(path, NULL, NULL, EXIT_NO_MEMORY));
 	if (env->exit_code)
 		arrow = "\001\e[1;31m\002 > \001\e[0m\002";
 	else
 		arrow = "\001\e[1;34m\002 > \001\e[0m\002";
 	prompt = ft_strconcat("\001\e[1;32m\002", dir, "\001\e[0m\002",
 			arrow, NULL);
+	if (!prompt)
+		return (free_vars(dir, path, NULL, EXIT_NO_MEMORY));
 	(*input) = readline(prompt);
-	free(prompt);
-	free(path);
-	free(dir);
+	return (free_vars(prompt, path, dir, EXIT_SUCCESS));
 }

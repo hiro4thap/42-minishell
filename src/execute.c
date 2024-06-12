@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 09:17:52 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 10:56:46 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,11 @@ static void	execute_simple_command(t_command command, t_environment *envp)
 	{
 		pwd = getcwd(NULL, 0);
 		cmd = ft_strconcat(pwd, "/", command.command[0], NULL);
+		if (!cmd)
+		{
+			perror(envp->shell);
+			exit(EXIT_FAILURE);
+		}
 		execve(cmd, command.command, envp->envp);
 		free(cmd);
 		free(pwd);
@@ -48,18 +53,26 @@ static void	execute_simple_command(t_command command, t_environment *envp)
 /// @param last_command TRUE if last command, FALSE otherwise.
 /// @param pipes Pointer to the array of pipes.
 /// @param env The minishell environment.
-static void	child(t_command command, int last_command, int *pipes,
+static int	child(t_command command, int last_command, int *pipes,
 	t_environment *env)
 {
+	int	exit_code;
+
 	if (command.id == 0)
-		dup_in_fds(NULL, command, command.id, env);
+		exit_code = dup_in_fds(NULL, command, command.id, env);
 	else
-		dup_in_fds(pipes + 2 * (command.id - 1), command, command.id, env);
+		exit_code = dup_in_fds(pipes + 2 * (command.id - 1), command,
+				command.id, env);
+	if (exit_code)
+		return (exit_code);
 	if (last_command)
-		dup_out_fds(NULL, command, env);
+		exit_code = dup_out_fds(NULL, command, env);
 	else
-		dup_out_fds(pipes + 2 * command.id, command, env);
+		exit_code = dup_out_fds(pipes + 2 * command.id, command, env);
+	if (exit_code)
+		return (exit_code);
 	execute_simple_command(command, env);
+	return (EXIT_SUCCESS);
 }
 
 /// @brief Ensures the relevant pipes are closed in the parent so that the pipes
@@ -90,6 +103,7 @@ static int	execute(char **commands, int num_commands, int *pipes,
 	int			pid;
 	t_command	command;
 	int			index;
+	int			exit_code;
 
 	index = 0;
 	while (index < num_commands)
@@ -98,15 +112,18 @@ static int	execute(char **commands, int num_commands, int *pipes,
 			return (-1);
 		pid = fork();
 		if (pid == -1)
-			exit(EXIT_FAILURE);
+			return (-2);
 		if (pid == 0)
 		{
 			set_child();
-			command = parse_command(index, commands[index], env);
+			if (parse_command(index, commands[index], env, &command))
+				return (-3);
 			if (index != num_commands - 1)
-				child(command, FALSE, pipes, env);
+				exit_code = child(command, FALSE, pipes, env);
 			else
-				child(command, TRUE, pipes, env);
+				exit_code = child(command, TRUE, pipes, env);
+			if (exit_code == EXIT_NO_MEMORY)
+				return (-3);
 			continue ;
 		}
 		parent(index, num_commands, pipes);
@@ -115,7 +132,7 @@ static int	execute(char **commands, int num_commands, int *pipes,
 	return (pid);
 }
 
-void	handle_pipeline(char **commands, int arrlen, int *pipes,
+int	handle_pipeline(char **commands, int arrlen, int *pipes,
 			t_environment *env)
 {
 	int	pid;
@@ -123,9 +140,16 @@ void	handle_pipeline(char **commands, int arrlen, int *pipes,
 
 	status = 0;
 	pid = execute(commands, arrlen, pipes, env);
+	if (pid == -1)
+		return (EXIT_PIPE_FAILURE);
+	else if (pid == -2)
+		return (EXIT_FORK_FAILURE);
+	else if (pid == -3)
+		return (EXIT_NO_MEMORY);
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		env->exit_code = WEXITSTATUS(status);
 	while (wait(0) > 0)
 		continue ;
+	return (EXIT_SUCCESS);
 }

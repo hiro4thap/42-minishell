@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 16:11:50 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 22:08:11 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 10:56:57 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,14 @@ char	*get_current_token(char *ptr)
 	ptr_start = ptr;
 	if (is_anglebracket(*ptr))
 		ptr = ft_strrchr(ptr, *ptr) + 1;
-	while (*ptr && !is_spacetab(*ptr) && !is_anglebracket(*ptr))
+	else
 	{
-		if (is_quote(*ptr) && ft_strchr(ptr + 1, *ptr))
-			ptr = ft_strchr(ptr + 1, *ptr);
-		ptr++;
+		while (*ptr && !is_spacetab(*ptr) && !is_anglebracket(*ptr))
+		{
+			if (is_quote(*ptr) && ft_strchr(ptr + 1, *ptr))
+				ptr = ft_strchr(ptr + 1, *ptr);
+			ptr++;
+		}
 	}
 	token = ft_substr(ptr_start, 0, ptr - ptr_start);
 	return (token);
@@ -44,11 +47,14 @@ char	*point_next_token(char *ptr)
 		ptr++;
 	if (is_anglebracket(*ptr))
 		ptr = ft_strrchr(ptr, *ptr) + 1;
-	while (*ptr && !is_spacetab(*ptr) && !is_anglebracket(*ptr))
+	else
 	{
-		if (is_quote(*ptr) && ft_strchr(ptr + 1, *ptr))
-			ptr = ft_strchr(ptr + 1, *ptr);
-		ptr++;
+		while (*ptr && !is_spacetab(*ptr) && !is_anglebracket(*ptr))
+		{
+			if (is_quote(*ptr) && ft_strchr(ptr + 1, *ptr))
+				ptr = ft_strchr(ptr + 1, *ptr);
+			ptr++;
+		}
 	}
 	while (is_spacetab(*ptr))
 		ptr++;
@@ -85,31 +91,31 @@ int	count_command(char *simple_command)
 /// @param simple_command a command split by pipeline
 /// @param command t_struct instance to store data on redirection
 /// @return command which is updated on redirection
-t_command	handle_redirections(
-		char *token, char *simple_command, t_command command)
+t_command	*handle_redirections(
+		char *token, char *simple_command, t_command *command)
 {
 	char	*redirection_argument;
 
 	redirection_argument = get_current_token(point_next_token(simple_command));
 	if (!ft_strncmp(token, "<", 2))
 	{
-		command.in_redirection = SINGLE_IN;
-		command.in_file = redirection_argument;
+		command->in_redirection = SINGLE_IN;
+		command->in_file = redirection_argument;
 	}
 	else if (!ft_strncmp(token, "<<", 3))
 	{
-		command.in_redirection = DOUBLE_IN;
-		command.heredoc_eof = redirection_argument;
+		command->in_redirection = DOUBLE_IN;
+		command->heredoc_eof = redirection_argument;
 	}
 	else if (!ft_strncmp(token, ">", 2))
 	{
-		command.out_redirection = SINGLE_OUT;
-		command.out_file = redirection_argument;
+		command->out_redirection = SINGLE_OUT;
+		command->out_file = redirection_argument;
 	}
 	else if (!ft_strncmp(token, ">>", 3))
 	{
-		command.out_redirection = DOUBLE_OUT;
-		command.out_file = redirection_argument;
+		command->out_redirection = DOUBLE_OUT;
+		command->out_file = redirection_argument;
 	}
 	return (command);
 }
@@ -117,15 +123,17 @@ t_command	handle_redirections(
 /// @brief parse a simple command by splitting it into tokens
 /// @param simple_command a command split by pipeline
 /// @return [MALLOC] t_command instance with parameters filled
-t_command	parse_command(int id, char *simple_command, t_environment *env)
+int	parse_command(int id, char *simple_command, t_environment *env,
+			t_command *command)
 {
 	int			i;
 	const int	len = count_command(simple_command);
 	char		*token;
-	t_command	command;
 
-	init_command(&command, id);
-	command.command = malloc((len + 1) * sizeof(char *));
+	init_command(command, id);
+	command->command = malloc((len + 1) * sizeof(char *));
+	if (!command->command)
+		return (EXIT_NO_MEMORY);
 	i = 0;
 	while (simple_command)
 	{
@@ -136,10 +144,18 @@ t_command	parse_command(int id, char *simple_command, t_environment *env)
 			simple_command = point_next_token(simple_command);
 		}
 		else
-			command.command[i++] = expand_token(token, env);
+		{
+			command->command[i++] = expand_token(token, env);
+			if (!command->command[i - 1])
+			{
+				ft_strarr_clear(command->command);
+				free(token);
+				return (EXIT_NO_MEMORY);
+			}
+		}
 		free(token);
 		simple_command = point_next_token(simple_command);
 	}
-	command.command[i] = NULL;
-	return (command);
+	command->command[i] = NULL;
+	return (EXIT_SUCCESS);
 }

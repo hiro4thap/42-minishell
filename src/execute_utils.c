@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/28 15:13:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/08 16:49:32 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/11 22:00:14 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,17 @@ char	**split_command(char *command)
 
 	len = count_simple_commands(command);
 	simple_commands = malloc((len + 1) * sizeof(char *));
+	if (!simple_commands)
+		return (NULL);
 	i = 0;
 	while (i < len)
 	{
 		simple_commands[i] = get_current_simple_command(command);
+		if (!simple_commands[i])
+		{
+			ft_strarr_clear(simple_commands);
+			return (NULL);
+		}
 		command = point_next_simple_command(command);
 		i++;
 	}
@@ -91,11 +98,29 @@ void	run_file(t_command command, t_environment *envp)
 		path = ft_strdup(get_value(envp, "PATH"));
 	else
 		path = getcwd(NULL, 0);
+	if (!path)
+	{
+		perror(envp->shell);
+		exit(EXIT_FAILURE);
+	}
 	dirs = ft_split(path, ':');
+	if (!dirs)
+	{
+		free(path);
+		perror(envp->shell);
+		exit(EXIT_FAILURE);
+	}
 	i = 0;
 	while (dirs[i])
 	{
 		cmd = ft_strconcat(dirs[i], "/", command.command[0], NULL);
+		if (!cmd)
+		{
+			free(path);
+			ft_strarr_clear(dirs);
+			perror(envp->shell);
+			exit(EXIT_FAILURE);
+		}
 		execve(cmd, command.command, envp->envp);
 		free(cmd);
 		i++;

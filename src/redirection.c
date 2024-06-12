@@ -6,7 +6,7 @@
 /*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/12 09:26:25 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 10:58:53 by hiono            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,16 @@ static void	heredoc_readinput(t_command command, int heredoc_pipe[2])
 /// @brief child process takes input from terminal until it hits the EOF string
 /// and passes it to the pipe so that command can take it as input
 /// @param command t_command structure which includs the EOF string
-static void	heredoc_in(t_command command, t_environment *env)
+static int	heredoc_in(t_command command, t_environment *env)
 {
 	int		heredoc_pipe[2];
 	int		pid;
 
 	if (pipe(heredoc_pipe) == -1)
-		return ;
+		return (EXIT_PIPE_FAILURE);
 	pid = fork();
 	if (pid < -1)
-		exit(EXIT_FAILURE);
+		return (EXIT_FORK_FAILURE);
 	else if (pid == 0)
 	{
 		close(heredoc_pipe[PIPE_READ]);
@@ -56,12 +56,14 @@ static void	heredoc_in(t_command command, t_environment *env)
 	else if (0 < pid)
 	{
 		close(heredoc_pipe[PIPE_WRITE]);
-		dup2(heredoc_pipe[PIPE_READ], STDIN_FILENO);
+		if (dup2(heredoc_pipe[PIPE_READ], STDIN_FILENO) == -1)
+			return (EXIT_DUP_FAILURE);
 		close(heredoc_pipe[PIPE_READ]);
 		while (wait(0) > 0)
 			continue ;
 		set_interactive(FALSE, env);
 	}
+	return (EXIT_SUCCESS);
 }
 
 /// @brief sets the stdin file descripter correspoinding to the redirection.
@@ -69,17 +71,18 @@ static void	heredoc_in(t_command command, t_environment *env)
 /// @param pipefd_c pipe passed to child process.
 /// The command will take input from the pipe
 /// @param command t_command structure to be execute
-/// @param index 
-void	dup_in_fds(int pipe_in[2], t_command command, int index,
+/// @param index
+int	dup_in_fds(int pipe_in[2], t_command command, int index,
 		t_environment *env)
 {
 	int		in_fd;
 
 	if (0 < index)
 	{
-		dup2(pipe_in[PIPE_READ], STDIN_FILENO);
+		if (dup2(pipe_in[PIPE_READ], STDIN_FILENO) == -1)
+			return (EXIT_DUP_FAILURE);
 		close(pipe_in[PIPE_READ]);
-		return ;
+		return (EXIT_SUCCESS);
 	}
 	else if (command.in_redirection == SINGLE_IN)
 	{
@@ -92,11 +95,13 @@ void	dup_in_fds(int pipe_in[2], t_command command, int index,
 		in_fd = open(command.in_file, O_RDONLY);
 		if (in_fd < 0)
 			exit(EXIT_FAILURE);
-		dup2(in_fd, STDIN_FILENO);
+		if (dup2(in_fd, STDIN_FILENO) == -1)
+			return (EXIT_DUP_FAILURE);
 		close(in_fd);
 	}
 	else if (command.in_redirection == DOUBLE_IN)
 		heredoc_in(command, env);
+	return (EXIT_SUCCESS);
 }
 
 /// @brief sets the stdout file descripter correspoinding to the redirection.
@@ -104,19 +109,20 @@ void	dup_in_fds(int pipe_in[2], t_command command, int index,
 /// @param pipefd_p pipe passed from parent process.
 /// The command will pass the result to the pipe
 /// @param command t_command structure to be execute
-void	dup_out_fds(int pipe_out[2], t_command command, t_environment *env)
+int	dup_out_fds(int pipe_out[2], t_command command, t_environment *env)
 {
 	int		out_fd;
 
 	if (pipe_out)
 	{
 		close(pipe_out[PIPE_READ]);
-		dup2(pipe_out[PIPE_WRITE], STDOUT_FILENO);
+		if (dup2(pipe_out[PIPE_WRITE], STDOUT_FILENO) == -1)
+			return (EXIT_DUP_FAILURE);
 		close(pipe_out[PIPE_WRITE]);
-		return ;
+		return (EXIT_SUCCESS);
 	}
 	if (command.out_redirection == NONE)
-		return ;
+		return (EXIT_SUCCESS);
 	if (!access(command.out_file, F_OK) && access(command.out_file, W_OK))
 		errprint_exit("%s: Permission denied\n", command.out_file,
 			env, EXIT_FAILURE);
@@ -128,6 +134,8 @@ void	dup_out_fds(int pipe_out[2], t_command command, t_environment *env)
 	if (out_fd < 0)
 		errprint_exit("%s: No such file or directory\n", command.out_file,
 			env, EXIT_FAILURE);
-	dup2(out_fd, STDOUT_FILENO);
+	if (dup2(out_fd, STDOUT_FILENO) == -1)
+		return (EXIT_DUP_FAILURE);
 	close(out_fd);
+	return (EXIT_SUCCESS);
 }
