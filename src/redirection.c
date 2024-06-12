@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/10 14:28:43 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/11 18:19:04 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 09:26:25 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ static void	heredoc_readinput(t_command command, int heredoc_pipe[2])
 {
 	char	*line;
 
-	set_heredoc(TRUE);
 	while (TRUE)
 	{
 		line = readline("\001\e[1;35m\002here_doc >\001\e[0m\002 ");
@@ -44,7 +43,6 @@ static void	heredoc_in(t_command command, t_environment *env)
 
 	if (pipe(heredoc_pipe) == -1)
 		return ;
-	set_heredoc(FALSE);
 	pid = fork();
 	if (pid < -1)
 		exit(EXIT_FAILURE);

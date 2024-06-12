@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 10:47:40 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/11 17:48:55 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 09:29:10 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,15 @@ static void	signal_interactive(int signal)
 	}
 }
 
-void	set_heredoc(int is_child)
+void	set_child(void)
 {
 	struct sigaction	interupt;
 	struct sigaction	quit;
 
 	ft_memset(&interupt, 0, sizeof(interupt));
 	ft_memset(&quit, 0, sizeof(quit));
-	if (is_child)
-		interupt.sa_handler = SIG_DFL;
-	else
-		interupt.sa_handler = SIG_IGN;
-	quit.sa_handler = SIG_IGN;
+	interupt.sa_handler = SIG_DFL;
+	quit.sa_handler = SIG_DFL;
 	sigaction(SIGINT, &interupt, NULL);
 	sigaction(SIGQUIT, &quit, NULL);
 }

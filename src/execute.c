@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhughes <jhughes@student.42adel.org.au>    +#+  +:+       +#+        */
+/*   By: jhughes <jhughes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:14:51 by hiono             #+#    #+#             */
-/*   Updated: 2024/06/09 21:53:43 by jhughes          ###   ########.fr       */
+/*   Updated: 2024/06/12 09:17:52 by jhughes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@ static int	execute(char **commands, int num_commands, int *pipes,
 			exit(EXIT_FAILURE);
 		if (pid == 0)
 		{
+			set_child();
 			command = parse_command(index, commands[index], env);
 			if (index != num_commands - 1)
 				child(command, FALSE, pipes, env);
